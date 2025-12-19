@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserChangeForm,UserCreationForm
-from .models import User
+from .models import User, Marketer
 
 
 @admin.register(User)
@@ -27,3 +27,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("phone","first_name","last_name","email")
 
     ordering = ("phone",)
+
+@admin.register(Marketer)
+class MarketerAdmin(admin.ModelAdmin):
+    pass

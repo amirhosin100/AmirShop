@@ -95,3 +95,11 @@ class User(AbstractBaseUser,PermissionsMixin):
         else :
             return ""
 
+class Marketer(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+    )
+
+    def __str__(self):
+        return self.user.phone
