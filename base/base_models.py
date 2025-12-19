@@ -13,12 +13,13 @@ class BaseModel(models.Model):
     )
 
     id = models.UUIDField(
-        primary_key=True
+        primary_key=True,
+        default=uuid4,
     )
 
     class Meta:
         abstract = True
-        ordering = ["-created-at"]
+        ordering = ["-created_at"]
         indexes = [
             models.Index(fields=[
                 "-created_at",
