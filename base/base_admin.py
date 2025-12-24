@@ -16,5 +16,3 @@ class BaseStackedInline(admin.StackedInline):
         if hasattr(self.model,attr):
             self.readonly_fields.append(attr)
 
-
-
