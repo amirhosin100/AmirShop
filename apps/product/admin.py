@@ -4,11 +4,11 @@ from .models import *
 
 # Register your models here.
 
-class ProductImageInline(BaseStackedInline):
+class ProductImageInline(admin.StackedInline):
     model = ProductImage
     extra = 0
 
-class ProductFeatureInline(BaseStackedInline):
+class ProductFeatureInline(admin.StackedInline):
     model = ProductFeature
     extra = 0
 
