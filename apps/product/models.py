@@ -50,6 +50,10 @@ class Product(BaseModel):
         indexes = BaseModel.Meta.indexes + [
             models.Index(fields=['name'])
         ]
+    
+    def save(self, *args, **kwargs):
+        self.discount_price = self.price - (self.price * self.percentage_off/100)
+        super().save(*args,**kwargs)
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
