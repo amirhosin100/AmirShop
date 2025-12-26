@@ -62,7 +62,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     photo = ResizedImageField(
         upload_to='users/photo/',
         size=[500, 500],
-        crop = ['center','middle'] ,
+        crop = ['middle','center'] ,
         quality=100,
         null=True,
         blank=True,
