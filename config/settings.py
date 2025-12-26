@@ -37,11 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #project apps
     'apps.user.apps.UserConfig',
     'apps.market.apps.MarketConfig',
     'apps.product.apps.ProductConfig',
     'apps.cart.apps.CartConfig',
     'apps.transaction.apps.TransactionConfig',
+    'apps.market_request.apps.MarketRequestConfig',
+    #rest_framework
     'rest_framework.authtoken',
 ]
 
