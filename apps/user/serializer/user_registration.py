@@ -2,12 +2,11 @@ from rest_framework import serializers
 from apps.user.models import User
 
 
-class UserRegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'phone',
-        ]
+class UserRegisterSerializer(serializers.Serializer):
+    phone = serializers.CharField(
+        required=True,
+        max_length=11,
+    )
 
     def validate_phone(self, phone):
         if not phone.isdigit():
@@ -21,7 +20,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return phone
 
-class UserSetPasswordSerializer(serializers.ModelSerializer):
+class UserSetPasswordSerializer(serializers.Serializer):
 
     password = serializers.CharField(
         write_only=True,
@@ -33,24 +32,20 @@ class UserSetPasswordSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    class Meta:
-        model = User
-        fields = [
-            'phone',
-        ]
 
     def validate(self, data):
         password = data.get("password")
         password2 = data.get("password2")
         if password != password2:
             raise serializers.ValidationError("password and password_repat must be equal")
+        return data
 
     def update(self, instance,validated_data):
         password = validated_data.pop("password")
         instance.set_password(password)
         instance.save()
 
-class UserChangeInformationSerializer(serializers.ModelSerializer):
+class UserInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -60,6 +55,3 @@ class UserChangeInformationSerializer(serializers.ModelSerializer):
             'bio',
             'photo',
         ]
-
-
-
