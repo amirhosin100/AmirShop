@@ -35,6 +35,13 @@ class AResponse:
         )
 
     @property
+    def forbidden(self):
+        return Response(
+            self._fail_data,
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    @property
     def _success_data(self):
         return {
             "success": True,

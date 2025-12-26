@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.user.models import User
+from utils.validate import check_phone
 
 
 class UserRegisterSerializer(serializers.Serializer):
@@ -9,16 +10,13 @@ class UserRegisterSerializer(serializers.Serializer):
     )
 
     def validate_phone(self, phone):
-        if not phone.isdigit():
-            raise serializers.ValidationError("phone must be a number")
 
-        if len(phone) != 11:
-            raise serializers.ValidationError("phone is not valid")
+        success,message = check_phone(phone)
 
-        if not phone.startswith("09"):
-            raise serializers.ValidationError("phone must start with <09>")
-
-        return phone
+        if success:
+            return phone
+        else:
+            raise serializers.ValidationError(message)
 
 class UserSetPasswordSerializer(serializers.Serializer):
 

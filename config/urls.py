@@ -10,11 +10,10 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('user/',
-         include(
-            'apps.user.urls.user_registration_urls',
-        )
-    ),
+    path('user/',include('apps.user.urls.user_registration_urls')),
+
+    path('market-request/',include('apps.market_request.urls')),
+
     path("", include('apps.user.urls.user_detail_urls')),
 
 ]
