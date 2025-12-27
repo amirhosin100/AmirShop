@@ -1,7 +1,8 @@
+from rest_framework import status
 from rest_framework.views import APIView
 from apps.user.models import User
 from apps.user.serializer.user_detail import UserDetailSerializer
-from utils.response import AResponse
+from rest_framework.response import Response
 
 
 class UserDetailView(APIView):
@@ -15,8 +16,14 @@ class UserDetailView(APIView):
             data = {
                 "error": "user dose not exist"
             }
-            return AResponse(data).not_found
+            return Response(
+                data,
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = UserDetailSerializer(instance=user)
 
-        return AResponse(serializer.data).success_ok
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )

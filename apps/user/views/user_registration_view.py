@@ -1,8 +1,8 @@
-from rest_framework import views, permissions
+from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
 from core.manage_code import CodeManager
 from apps.user.models import User
-from utils.response import AResponse
+from rest_framework.response import Response
 from apps.user.serializer.user_registration import (
     UserRegisterSerializer,
     UserSetPasswordSerializer,
@@ -27,9 +27,15 @@ class UserRegistrationCreateCodeView(views.APIView):
                 "mobile_number": phone,
             }
 
-            return AResponse(data).success_create
+            return Response(
+                data,
+                status=status.HTTP_201_CREATED
+            )
         else:
-            return AResponse(serializer.errors).bad_request
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserVerifyCodeView(views.APIView):
@@ -54,21 +60,29 @@ class UserVerifyCodeView(views.APIView):
                         "token": token.key
                     }
 
-                    return AResponse(response_data).success_create
+                    return Response(
+                        response_data,
+                        status=status.HTTP_201_CREATED
+                    )
                 else:
-                    return AResponse(
+                    return Response(
                         data={
                             'error': 'code is incorrect or expired'
-                        }
-                    ).bad_request
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
-                return AResponse(serializer.errors).bad_request
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         else:
-            return AResponse(
+            return Response(
                 data={
                     'error': 'code is empty'
-                }
-            ).bad_request
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserSetPasswordView(views.APIView):
@@ -94,20 +108,27 @@ class UserSetPasswordView(views.APIView):
                     success = True
 
             else:
-                return AResponse(
+                return Response(
                     data={
                         'error': 'old_password is not correct'
-                    }
-                ).bad_request
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         if success:
             success_data = {
                 'message': 'password have been updated!'
             }
 
-            return AResponse(success_data).success_ok
+            return Response(
+                success_data,
+                status=status.HTTP_200_OK
+            )
         else:
-            return AResponse(serializer.errors).bad_request
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
     def options(self, request, *args, **kwargs):
@@ -120,7 +141,10 @@ class UserSetPasswordView(views.APIView):
         if request.user.password :
             data['data'].append("old_password")
 
-        return AResponse(data).success_ok
+        return Response(
+            data,
+            status=status.HTTP_200_OK
+        )
 
 
 class UserPasswordResetView(views.APIView):
@@ -145,14 +169,23 @@ class UserPasswordResetView(views.APIView):
                         'success': True,
                         'message' : "password has been reset!",
                     }
-                    return AResponse(data).success_create
+                    return Response(
+                        data,
+                        status=status.HTTP_200_OK
+                    )
             else:
-                return AResponse(serializer.errors).bad_request
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         data = {
             'code': 'code is incorrect or expired',
         }
-        return AResponse(data).bad_request
+        return Response(
+            data,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class UserChangeInfoView(views.APIView):
@@ -168,6 +201,12 @@ class UserChangeInfoView(views.APIView):
         if serializer.is_valid():
             serializer.update(request.user, serializer.validated_data)
 
-            return  AResponse(serializer.data).success_ok
+            return  Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
         else:
-            return AResponse(serializer.errors).bad_request
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )

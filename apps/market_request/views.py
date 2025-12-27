@@ -1,10 +1,11 @@
+from rest_framework import status
 from rest_framework.views import APIView
 
 from apps.market_request.models import MarketRequest
 from apps.market_request.serializer import (
     MarketRequestSerializer,
 )
-from utils.response import AResponse
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -17,9 +18,15 @@ class MarketRequestCreateView(APIView):
         if serializer.is_valid():
             serializer.save(user=request.user)
 
-            return AResponse(serializer.data).success_create
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
 
-        return AResponse(serializer.errors).bad_request
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 class MarketRequestDetailView(APIView):
     serializer_class = MarketRequestSerializer
@@ -32,11 +39,17 @@ class MarketRequestDetailView(APIView):
             data = {
                 "error":"you have not permission to view this market request"
             }
-            return AResponse(data).forbidden
+            return Response(
+                data,
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = self.serializer_class(instance=market_request)
 
-        return AResponse(serializer.data).success_ok
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
 
 class MarketRequestListView(APIView):
@@ -47,5 +60,8 @@ class MarketRequestListView(APIView):
 
         serializer = self.serializer_class(market_requests, many=True)
 
-        return AResponse(serializer.data).success_ok
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
