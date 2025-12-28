@@ -3,27 +3,42 @@ URL configuration for AmirShop project.
 
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView
+)
+
+api_urlpatterns = [
+    path('user/', include('apps.user.urls.user_registration_urls')),
+
+    path('user/market/', include('apps.market.urls.user_urls')),
+
+    path('owner/market/', include('apps.market.urls.owner_urls')),
+
+    path('user/product/', include('apps.product.urls.user_urls')),
+
+    path('owner/product/', include('apps.product.urls.owner_urls')),
+
+    path('market-request/', include('apps.market_request.urls')),
+
+    path("", include('apps.user.urls.user_detail_urls')),
+
+    # YOUR PATTERNS
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('user/',include('apps.user.urls.user_registration_urls')),
-
-    path('user/market/',include('apps.market.urls.user_urls')),
-
-    path('owner/market/',include('apps.market.urls.owner_urls')),
-
-    path('user/product/',include('apps.product.urls.user_urls')),
-
-    path('owner/product/',include('apps.product.urls.owner_urls')),
-
-    path('market-request/',include('apps.market_request.urls')),
-
-    path("", include('apps.user.urls.user_detail_urls')),
+    path('api/', include(api_urlpatterns)),
 
 ]
-if settings.DEBUG :
+if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

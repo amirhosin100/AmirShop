@@ -44,8 +44,10 @@ INSTALLED_APPS = [
     'apps.cart.apps.CartConfig',
     'apps.transaction.apps.TransactionConfig',
     'apps.market_request.apps.MarketRequestConfig',
-    #rest_framework
+    #api
     'rest_framework.authtoken',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
@@ -141,5 +143,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'AmirShop project',
+    'DESCRIPTION': 'A website for shopping.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
 }
