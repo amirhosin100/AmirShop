@@ -16,6 +16,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
             "url",
             'id'
         ]
+        read_only_fields = ['id']
 
     def get_url(self, image_object):
         return image_object.image.urls
@@ -29,6 +30,7 @@ class ProductFeatureSerializer(serializers.ModelSerializer):
             "value",
             "id",
         ]
+        read_only_fields = ['id']
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True,read_only=True)
@@ -37,6 +39,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            "id",
             "name",
             "price",
             "discount_price",
@@ -46,3 +49,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "features",
             "stock",
         ]
+        read_only_fields = ['id']

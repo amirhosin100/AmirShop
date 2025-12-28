@@ -29,9 +29,7 @@ class ProductOwnerCreateSerializer(serializers.ModelSerializer):
             "updated_at",
             "id",
         ]
-        extra_kwargs = {
-            "market": {"read_only": True},
-        }
+        read_only_fields = ['id','market','created_at','updated_at']
 
     def validate_name(self, name):
         if len(name) < 2:
@@ -71,6 +69,7 @@ class ProductOwnerUpdateSerializer(serializers.ModelSerializer):
             "updated_at",
             "id",
         ]
+        read_only_fields = ['id']
 
     def validate_name(self, name):
         if len(name) < 2:

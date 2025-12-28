@@ -24,6 +24,7 @@ class ProductSimpleSerializer(serializers.ModelSerializer):
             'image',
             'id'
         ]
+        read_only_fields = ['id']
 
     # show just first image
     def get_image(self, image_object):

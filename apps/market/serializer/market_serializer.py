@@ -8,6 +8,7 @@ class MarketOwnerSerializer(serializers.ModelSerializer):
         exclude = (
             'marketer',
         )
+        read_only_fields = ['id','created_at','updated_at']
 
     def validate_name(self, value):
         if len(value) < 3:
@@ -21,3 +22,4 @@ class MarketUserSerializer(serializers.ModelSerializer):
             'is_active',
             'updated_at',
         )
+        read_only_fields = ['id','created_at']
