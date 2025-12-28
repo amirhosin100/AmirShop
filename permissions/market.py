@@ -5,13 +5,14 @@ from apps.user.models import Marketer
 class IsMarketer(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if Marketer.objects.filter(user=request.user).exists():
-            return True
+        if request.user.is_authenticated:
+            if Marketer.objects.filter(user=request.user).exists():
+                return True
 
         return False
 
 
-class IsOwnerMarket(permissions.BasePermission):
+class IsMarketOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if obj.marketer.user == request.user:

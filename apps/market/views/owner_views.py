@@ -5,7 +5,7 @@ from apps.market.serializer.market_serializer import (
     MarketOwnerSerializer,
 )
 from permissions.market import (
-    IsOwnerMarket,
+    IsMarketOwner,
     IsMarketer
 )
 
@@ -17,11 +17,13 @@ class MarketOwnerCreateView(views.APIView):
     def post(self, request):
         self.check_permissions(request)
 
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(
+            data=request.data,
+        )
 
         serializer.is_valid(raise_exception=True)
 
-        serializer.save()
+        serializer.save(marketer=request.user.marketer)
 
         return Response(
             serializer.data,
@@ -30,7 +32,7 @@ class MarketOwnerCreateView(views.APIView):
 
 class MarketOwnerUpdateView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsOwnerMarket,)
+    permission_classes = (IsMarketOwner,)
 
     def patch(self, request,market_id):
 
@@ -59,7 +61,7 @@ class MarketOwnerUpdateView(views.APIView):
 
 class MarketOwnerDeleteView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsOwnerMarket,)
+    permission_classes = (IsMarketOwner,)
 
     def delete(self, request,market_id):
         try :
@@ -85,7 +87,7 @@ class MarketOwnerDeleteView(views.APIView):
 
 class MarketOwnerDetailView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsOwnerMarket,)
+    permission_classes = (IsMarketOwner,)
 
     def get(self,request,market_id):
         try:
