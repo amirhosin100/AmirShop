@@ -5,6 +5,9 @@ from apps.market.models import Market
 class MarketOwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
+        exclude = (
+            'marketer',
+        )
 
     def validate_name(self, value):
         if len(value) < 3:

@@ -16,6 +16,10 @@ urlpatterns = [
 
     path('owner/market/',include('apps.market.urls.owner_urls')),
 
+    path('user/product/',include('apps.product.urls.user_urls')),
+
+    path('owner/product/',include('apps.product.urls.owner_urls')),
+
     path('market-request/',include('apps.market_request.urls')),
 
     path("", include('apps.user.urls.user_detail_urls')),
