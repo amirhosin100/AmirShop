@@ -17,9 +17,11 @@ api_urlpatterns = [
 
     path('user/market/', include('apps.market.urls.user_urls')),
 
-    path('owner/market/', include('apps.market.urls.owner_urls')),
-
     path('user/product/', include('apps.product.urls.user_urls')),
+
+    path('user/cart/', include('apps.cart.urls.user_urls')),
+
+    path('owner/market/', include('apps.market.urls.owner_urls')),
 
     path('owner/product/', include('apps.product.urls.owner_urls')),
 

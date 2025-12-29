@@ -1,5 +1,4 @@
 from django.utils import timezone
-from base.base_models import BaseModel
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 from django_resized import ResizedImageField
