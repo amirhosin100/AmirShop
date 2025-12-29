@@ -44,13 +44,14 @@ class AddToCartView(views.APIView):
 
         quantity = request.data.get("quantity")
 
-        if quantity <= 0:
-            return Response(
-                data={
-                    "message": "Quantity must be greater than 0",
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        if isinstance(quantity, int):
+            if quantity <= 0:
+                return Response(
+                    data={
+                        "message": "Quantity must be greater than 0",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         if quantity is None:
             item = Cart.manage_items.add(request.user, product)

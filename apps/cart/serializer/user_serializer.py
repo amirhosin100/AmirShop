@@ -18,10 +18,10 @@ class CartItemSerializer(serializers.ModelSerializer):
             'id'
         )
         read_only_fields = (
-            'id',
-            'final_price',
             'product',
-            'product_name'
+            'product_name',
+            'final_price',
+            'id'
         )
 
     def get_product_name(self, obj):
