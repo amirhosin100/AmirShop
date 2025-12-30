@@ -21,10 +21,14 @@ class CodeManager:
         return self._code
 
     def load_code(self):
-        data = self.request.session[self.key]
+        data = self.request.session.get(self.key,None)
 
-        self._code = data["code"]
-        self._expire = data["expire_time"]
+        if data:
+            self._code = data["code"]
+            self._expire = data["expire_time"]
+            return True
+
+        return False
 
 
     def save_in_session(self):

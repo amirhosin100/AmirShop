@@ -13,7 +13,13 @@ from drf_spectacular.views import (
 )
 
 api_urlpatterns = [
-    path('user/', include('apps.user.urls.user_registration_urls')),
+    path(
+        'user/',
+        include(
+            'apps.user.urls.user_registration_urls',
+            namespace='user_registration'
+        )
+    ),
 
     path('user/market/', include('apps.market.urls.user_urls')),
 
@@ -27,7 +33,7 @@ api_urlpatterns = [
 
     path('market-request/', include('apps.market_request.urls')),
 
-    path("", include('apps.user.urls.user_detail_urls')),
+    path("", include('apps.user.urls.user_detail_urls',namespace='user_detail')),
 
     # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 from django_resized import ResizedImageField
+from utils.validate import check_phone
 
 class UserManager(BaseUserManager):
 
@@ -23,6 +24,10 @@ class UserManager(BaseUserManager):
 
         if not phone :
             raise ValueError('Phone must not be null.')
+
+        success , message = check_phone(phone)
+        if not success:
+            raise ValueError(message)
 
         user = self.model(
             phone=phone,
