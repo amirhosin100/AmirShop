@@ -83,4 +83,3 @@ class MarketerModelTest(TestCase):
         )
         self.assertEqual(str(marketer), '09876543211')
         self.assertEqual(Marketer.objects.count(), 1)
-        self.assertEqual(Marketer.objects.count(), 1)
