@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import test, status
 from rest_framework.test import APIRequestFactory, force_authenticate, APIClient
 from django.urls import reverse
@@ -49,7 +50,7 @@ class UserCreateCodeTest(test.APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual('phone is not valid', str(response.data['phone'][0]))
 
-    def test_phone_dont_start_with_one_zero(self):
+    def test_phone_dont_start_with_zero_nine(self):
         response = self.client.post(
             reverse('user_registration:register'),
             data={
@@ -325,3 +326,10 @@ class UserDetailInfoTest(test.APITestCase):
         self.assertIsNotNone(response.data.get('first_name'))
         self.assertEqual(response.data.get('first_name'), 'ali')
         self.assertEqual(response.data.get('email'), 'amir@email.com')
+
+    def test_anonymous_user(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(
+            reverse('user_detail:detail', args=[self.user_1.phone]),
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

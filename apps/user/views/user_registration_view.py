@@ -1,5 +1,6 @@
 from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from core.manage_code import CodeManager
 from apps.user.models import User
 from rest_framework.response import Response
@@ -92,6 +93,7 @@ class UserVerifyCodeView(views.APIView):
 
 class UserSetPasswordView(views.APIView):
     serializer_class = UserSetPasswordSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         success = False
@@ -152,7 +154,7 @@ class UserSetPasswordView(views.APIView):
 
 
 class UserPasswordResetView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     serializer_class = UserRegisterSerializer
 
@@ -186,7 +188,7 @@ class UserPasswordResetView(views.APIView):
 
 
 class UserChangeInfoView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserInformationSerializer
 
     def patch(self, request):
