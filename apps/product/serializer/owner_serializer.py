@@ -47,12 +47,12 @@ class ProductOwnerCreateSerializer(serializers.ModelSerializer):
 
         product = Product.objects.create(
             market_id=market_id,
-            name=validated_data["name"],
-            description=validated_data["description"],
-            price=validated_data["price"],
-            percentage_off=validated_data["percentage_off"],
-            discount_price=validated_data["discount_price"],
-            stock=validated_data["stock"],
+            name=validated_data.get("name"),
+            description=validated_data.get("description"),
+            price=validated_data.get("price"),
+            percentage_off=validated_data.get("percentage_off"),
+            discount_price=validated_data.get("discount_price"),
+            stock=validated_data.get("stock"),
 
         )
 
@@ -64,6 +64,8 @@ class ProductOwnerCreateSerializer(serializers.ModelSerializer):
         # create features
         for feature_data in features_data:
             ProductFeature.objects.create(product=product, **feature_data)
+
+        return product
 
 
 class ProductOwnerUpdateSerializer(serializers.ModelSerializer):

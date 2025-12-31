@@ -17,13 +17,17 @@ TEST_MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'test_media')
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class ProductViewPermissionTests(APITestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpTestData(cls):
         # ایجاد کاربر
-        self.user = User.objects.create_user(phone="09909998877", password="password123")
-        Marketer.objects.create(user=self.user)
+        cls.user = User.objects.create_user(phone="09909998877", password="password123")
+        Marketer.objects.create(user=cls.user)
 
         # ایجاد مارکت
-        self.market = Market.objects.create(marketer=self.user.marketer, name="TestMarket")
+        cls.market = Market.objects.create(marketer=cls.user.marketer, name="TestMarket")
+
+    def setUp(self):
 
         # ایجاد محصول
         self.product = Product.objects.create(
