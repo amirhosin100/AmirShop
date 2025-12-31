@@ -332,4 +332,4 @@ class UserDetailInfoTest(test.APITestCase):
         response = self.client.get(
             reverse('user_detail:detail', args=[self.user_1.phone]),
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

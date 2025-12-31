@@ -4,6 +4,7 @@ from apps.product.views.user_views import (
     ProductDetailView,
 )
 
+app_name = 'user_product'
 
 urlpatterns = [
     path('list/', ProductListView.as_view(), name='product_list'),

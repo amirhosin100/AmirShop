@@ -1,4 +1,5 @@
 from rest_framework import views, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from apps.product.models import Product
 from apps.product.serializer.user_seializer import (
@@ -11,6 +12,7 @@ from apps.product.serializer.common_seializer import (
 
 class ProductListView(views.APIView):
     serializer_class = ProductSimpleSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         queryset = Product.objects.all()
@@ -29,6 +31,7 @@ class ProductListView(views.APIView):
 
 class ProductDetailView(views.APIView):
     serializer_class = ProductDetailSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, product_id):
         try:

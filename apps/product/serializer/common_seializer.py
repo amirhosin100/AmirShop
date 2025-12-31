@@ -19,7 +19,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def get_url(self, image_object):
-        return image_object.image.urls
+        return image_object.image.url
 
 
 class ProductFeatureSerializer(serializers.ModelSerializer):
