@@ -57,6 +57,7 @@ class MarketOwnerCreateViewTest(BaseMarketOwnerTest):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["name"], "test")
         self.assertEqual(Market.objects.count(), 2)
 
 
@@ -125,6 +126,7 @@ class OwnerDetailViewTest(BaseMarketOwnerTest):
             reverse('market_owner:detail', args=[self.market.id]),
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("name"), "test")
         self.assertEqual(Market.objects.count(), 1)
 
 
@@ -141,6 +143,7 @@ class OwnerListViewTest(BaseMarketOwnerTest):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0].get("name"), "test")
 
 
 class OtherOwnerTest(BaseMarketOwnerTest):
