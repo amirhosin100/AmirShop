@@ -21,13 +21,13 @@ api_urlpatterns = [
         )
     ),
 
-    path('user/market/', include('apps.market.urls.user_urls')),
+    path('user/market/', include('apps.market.urls.user_urls',namespace='market_user')),
 
     path('user/product/', include('apps.product.urls.user_urls')),
 
     path('user/cart/', include('apps.cart.urls.user_urls')),
 
-    path('owner/market/', include('apps.market.urls.owner_urls')),
+    path('owner/market/', include('apps.market.urls.owner_urls',namespace='market_owner')),
 
     path('owner/product/', include('apps.product.urls.owner_urls')),
 
