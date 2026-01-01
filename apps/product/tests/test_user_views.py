@@ -15,7 +15,7 @@ from uuid import uuid4
 TEST_MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'test_media')
 
 
-@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
+#@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class ProductViewPermissionTests(APITestCase):
 
     @classmethod

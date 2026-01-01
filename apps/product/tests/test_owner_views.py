@@ -1,4 +1,5 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase,override_settings
+import shutil
 from rest_framework import status
 from django.urls import reverse
 from apps.user.models import User, Marketer
@@ -25,6 +26,7 @@ def get_test_image_file(name="test.jpg"):
 
 
 # ===================== BASE TEST SETUP =====================
+#@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestSetup(APITestCase):
 
     @classmethod
