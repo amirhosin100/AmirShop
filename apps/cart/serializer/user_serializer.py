@@ -28,6 +28,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         return obj.product.name
 
     def validate_quantity(self, quantity):
+        if not isinstance(quantity, int):
+            raise serializers.ValidationError('quantity must be an integer')
         if quantity <= 0:
             raise serializers.ValidationError('Quantity must be positive')
         return quantity

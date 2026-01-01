@@ -42,21 +42,7 @@ class AddToCartView(views.APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        quantity = request.data.get("quantity")
-
-        if isinstance(quantity, int):
-            if quantity <= 0:
-                return Response(
-                    data={
-                        "message": "Quantity must be greater than 0",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-        if quantity is None:
-            item = Cart.manage_items.add(request.user, product)
-        else:
-            item = Cart.manage_items.set(request.user, product, quantity=quantity)
+        item = Cart.manage_items.add(request.user, product)
 
         serializer = CartItemSerializer(instance=item)
 
@@ -115,11 +101,18 @@ class SetItemQuantityView(views.APIView):
         serializer = CartItemSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
+        if not serializer.validated_data.get('quantity') :
+            return Response(
+                data={
+                    "error": "quantity is required",
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         item = Cart.manage_items.set(
             request.user,
             product=product,
-            quantity=serializer.validated_data["quantity"]
+            quantity=serializer.validated_data.get('quantity'),
         )
         serializer = CartItemSerializer(instance=item)
 

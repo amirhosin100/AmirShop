@@ -25,7 +25,7 @@ api_urlpatterns = [
 
     path('user/product/', include('apps.product.urls.user_urls',namespace='product_user')),
 
-    path('user/cart/', include('apps.cart.urls.user_urls')),
+    path('user/cart/', include('apps.cart.urls.user_urls'),name='cart_user'),
 
     path('owner/market/', include('apps.market.urls.owner_urls',namespace='market_owner')),
 

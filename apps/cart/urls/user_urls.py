@@ -9,6 +9,8 @@ from apps.cart.views.user_views import (
     SetItemQuantityView
 )
 
+app_name = 'cart_user'
+
 urlpatterns = [
     path('', CartDetailView.as_view(), name='cart_detail'),
     path('clear/', CartClearView.as_view(), name='cart_clear'),
