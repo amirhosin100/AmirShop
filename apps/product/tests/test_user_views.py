@@ -68,7 +68,7 @@ class ProductViewPermissionTests(APITestCase):
     # ---------------- List View ----------------
     def test_product_list_anonymous_denied(self):
         response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_product_list_authenticated(self):
         self.client.force_authenticate(user=self.user)
@@ -91,7 +91,7 @@ class ProductViewPermissionTests(APITestCase):
     # ---------------- Detail View ----------------
     def test_product_detail_anonymous_denied(self):
         response = self.client.get(self.detail_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_product_detail_authenticated_exists(self):
         self.client.force_authenticate(user=self.user)

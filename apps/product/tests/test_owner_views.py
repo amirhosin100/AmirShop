@@ -175,7 +175,7 @@ class ProductFeatureViewTests(BaseTestSetup):
         url = reverse('product_owner:feature_create', kwargs={'product_id': self.product.id})
         data = {"key": "size", "value": "large"}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_feature_update_permission_denied(self):
         self.client.force_authenticate(user=self.other_user)
@@ -194,7 +194,7 @@ class ProductFeatureViewTests(BaseTestSetup):
         )
         data = {"value": "blue"}
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_feature_delete_permission_denied(self):
         self.client.force_authenticate(user=self.other_user)
@@ -211,7 +211,7 @@ class ProductFeatureViewTests(BaseTestSetup):
             kwargs={'product_id': self.product.id, 'feature_id': self.feature.id}
         )
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 # ===================== PRODUCT IMAGE TESTS =====================
@@ -240,7 +240,7 @@ class ProductImageViewTests(BaseTestSetup):
         image_file = get_test_image_file("anon_image.jpg")
         data = {"title": "New Image", "image": image_file}
         response = self.client.post(url, data, format='multipart')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ======= UPDATE =======
     def test_image_update_success(self):
@@ -262,7 +262,7 @@ class ProductImageViewTests(BaseTestSetup):
         url = reverse('product_owner:image_update', kwargs={'product_id': self.product.id, 'image_id': self.image.id})
         data = {"title": "Updated Image"}
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ======= DELETE =======
     def test_image_delete_success(self):
@@ -281,4 +281,4 @@ class ProductImageViewTests(BaseTestSetup):
     def test_image_delete_anonymous(self):
         url = reverse('product_owner:image_delete', kwargs={'product_id': self.product.id, 'image_id': self.image.id})
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

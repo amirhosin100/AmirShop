@@ -78,7 +78,7 @@ class CartViewsTestCase(APITestCase):
         """Unauthenticated GET should return 403."""
         self.client.force_authenticate(user=None)
         response = self.client.get(self.cart_detail_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # AddToCartView Tests
     def test_add_to_cart_success_adds_one(self):
@@ -120,7 +120,7 @@ class CartViewsTestCase(APITestCase):
         """Unauthenticated POST should return 403."""
         self.client.force_authenticate(user=None)
         response = self.client.post(self.add_to_cart_url(self.product1.id))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # DecreaseCartItemView Tests
     def test_decrease_cart_item_success(self):
@@ -152,7 +152,7 @@ class CartViewsTestCase(APITestCase):
         """Unauthenticated decrease 403."""
         self.client.force_authenticate(user=None)
         response = self.client.post(self.decrease_item_url(self.product1.id))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # SetItemQuantityView Tests
     def test_set_item_quantity_success(self):
@@ -208,7 +208,7 @@ class CartViewsTestCase(APITestCase):
         self.client.force_authenticate(user=None)
         data = {'quantity': 5}
         response = self.client.post(self.set_quantity_url(self.product1.id), data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # RemoveCartItemView Tests
     def test_remove_cart_item_success(self):
@@ -234,7 +234,7 @@ class CartViewsTestCase(APITestCase):
         """Unauthenticated remove 403."""
         self.client.force_authenticate(user=None)
         response = self.client.delete(self.remove_item_url(self.product1.id))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # CartClearView Tests
     def test_clear_cart_success_with_items(self):
@@ -256,7 +256,7 @@ class CartViewsTestCase(APITestCase):
         """Unauthenticated clear 403."""
         self.client.force_authenticate(user=None)
         response = self.client.post(self.clear_cart_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # Additional Cross-View and Multi-User Tests
     def test_multi_user_carts_independent(self):
