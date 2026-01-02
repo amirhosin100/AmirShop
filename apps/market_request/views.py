@@ -13,7 +13,7 @@ class MarketRequestCreateView(APIView):
     serializer_class = MarketRequestSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = MarketRequestSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -33,7 +33,15 @@ class MarketRequestDetailView(APIView):
 
     def get(self,request,market_request_id):
 
-        market_request = MarketRequest.objects.get(pk=market_request_id)
+        try:
+            market_request = MarketRequest.objects.get(id=market_request_id)
+        except MarketRequest.DoesNotExist:
+            return Response(
+                data={
+                    'error':'MarketRequest does not exist'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         if market_request.user != request.user:
             data = {
@@ -44,7 +52,7 @@ class MarketRequestDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = self.serializer_class(instance=market_request)
+        serializer = MarketRequestSerializer(instance=market_request)
 
         return Response(
             serializer.data,
@@ -58,7 +66,7 @@ class MarketRequestListView(APIView):
     def get(self,request):
         market_requests = MarketRequest.objects.filter(user=request.user)
 
-        serializer = self.serializer_class(market_requests, many=True)
+        serializer = MarketRequestSerializer(market_requests, many=True)
 
         return Response(
             serializer.data,

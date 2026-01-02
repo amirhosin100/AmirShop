@@ -104,7 +104,6 @@ class UserSetPasswordView(views.APIView):
             if serializer.is_valid():
                 serializer.update(request.user, serializer.validated_data)
                 success = True
-                print("yes")
 
         else:
             old_password = request.data.get('old_password')

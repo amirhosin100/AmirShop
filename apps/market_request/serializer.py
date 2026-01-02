@@ -27,19 +27,19 @@ class MarketRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(message)
 
     def validate_city(self, city):
-        if len(city) < 1:
+        if len(city) <= 1:
             raise serializers.ValidationError("city must be at least 2 characters")
 
         return city
 
     def validate_description(self,description):
-        if len(description) <= 100:
+        if len(description) < 100:
             raise serializers.ValidationError("description must be at least 100 characters")
 
         return description
 
     def validate_address(self,address):
-        if len(address) <= 30:
+        if len(address) < 30:
             raise serializers.ValidationError("address must be at least 30 characters")
 
         return address

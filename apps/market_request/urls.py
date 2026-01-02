@@ -5,6 +5,8 @@ from apps.market_request.views import (
     MarketRequestDetailView
 )
 
+app_name = 'market_request'
+
 urlpatterns = [
     path('create/',MarketRequestCreateView.as_view(),name='create'),
 

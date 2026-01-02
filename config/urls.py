@@ -31,7 +31,7 @@ api_urlpatterns = [
 
     path('owner/product/', include('apps.product.urls.owner_urls',namespace='product_owner')),
 
-    path('market-request/', include('apps.market_request.urls')),
+    path('market-request/', include('apps.market_request.urls',namespace='market_request')),
 
     path("", include('apps.user.urls.user_detail_urls',namespace='user_detail')),
 
