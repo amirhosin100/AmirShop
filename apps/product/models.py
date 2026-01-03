@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
 def get_product_path(instance, filename):
-    return f"{instance.market.name}/{instance.name}/{filename}"
+    return f"{instance.product.market.name}/{instance.product.name}/{filename}"
 
 class Product(BaseModel):
     market = models.ForeignKey(

@@ -11,15 +11,15 @@ class UserRegisterSerializer(serializers.Serializer):
 
     def validate_phone(self, phone):
 
-        success,message = check_phone(phone)
+        success, message = check_phone(phone)
 
         if success:
             return phone
         else:
             raise serializers.ValidationError(message)
 
-class UserSetPasswordSerializer(serializers.Serializer):
 
+class UserSetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -30,7 +30,6 @@ class UserSetPasswordSerializer(serializers.Serializer):
         required=True,
     )
 
-
     def validate(self, data):
         password = data.get("password")
         password2 = data.get("password2")
@@ -38,10 +37,11 @@ class UserSetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("password and password_repat must be equal")
         return data
 
-    def update(self, instance,validated_data):
+    def update(self, instance, validated_data):
         password = validated_data.pop("password")
         instance.set_password(password)
         instance.save()
+
 
 class UserInformationSerializer(serializers.ModelSerializer):
     class Meta:

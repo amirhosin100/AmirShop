@@ -13,6 +13,7 @@ from apps.product.views.owner_views import (
     ProductFeatureDeleteView,
 )
 
+app_name = 'product_owner'
 
 urlpatterns = [
     path('create/<str:market_id>/', ProductCreateView.as_view(), name='product_create'),
@@ -21,12 +22,12 @@ urlpatterns = [
     path('detail/<str:product_id>/', ProductDetailView.as_view(), name='product_detail'),
     path('list/', ProductListView.as_view(), name='product_list'),
 
-    path('image/<str:product_id>/', ProductImageCreateView.as_view(), name='create_image'),
-    path('image/<str:product_id>/update/<str:image_id>/', ProductImageUpdateView.as_view(), name='update_image'),
-    path('image/<str:product_id>/delete/<str:image_id>/', ProductImageDeleteView.as_view(), name='delete_image'),
+    path('image/<str:product_id>/', ProductImageCreateView.as_view(), name='image_create'),
+    path('image/<str:product_id>/update/<str:image_id>/', ProductImageUpdateView.as_view(), name='image_update'),
+    path('image/<str:product_id>/delete/<str:image_id>/', ProductImageDeleteView.as_view(), name='image_delete'),
 
-    path('feature/<str:product_id>/', ProductFeatureCreateView.as_view(), name='create_feature'),
-    path('feature/<str:product_id>/update/<str:feature_id>/', ProductFeatureUpdateView.as_view(), name='update_feature'),
-    path('feature/<str:product_id>/delete/<str:feature_id>/', ProductFeatureDeleteView.as_view(), name='delete_feature'),
+    path('feature/<str:product_id>/', ProductFeatureCreateView.as_view(), name='feature_create'),
+    path('feature/<str:product_id>/update/<str:feature_id>/', ProductFeatureUpdateView.as_view(), name='feature_update'),
+    path('feature/<str:product_id>/delete/<str:feature_id>/', ProductFeatureDeleteView.as_view(), name='feature_delete'),
 
 ]

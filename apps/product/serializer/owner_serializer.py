@@ -11,8 +11,8 @@ from apps.product.serializer.common_seializer import (
 
 
 class ProductOwnerCreateSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, required=False)
-    features = ProductFeatureSerializer(many=True, required=False)
+    images = ProductImageSerializer(many=True,default=[])
+    features = ProductFeatureSerializer(many=True,default=[])
 
     class Meta:
         model = Product
@@ -41,19 +41,31 @@ class ProductOwnerCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("product price must be greater than 0")
         return price
 
-    def create(self, validated_data):
+    def create(self, validated_data,market_id,*args,**kwargs):
         images_data = validated_data.pop("images")
         features_data = validated_data.pop("features")
 
-        product = Product.objects.create(**validated_data)
+        product = Product.objects.create(
+            market_id=market_id,
+            name=validated_data.get("name"),
+            description=validated_data.get("description"),
+            price=validated_data.get("price"),
+            percentage_off=validated_data.get("percentage_off"),
+            discount_price=validated_data.get("discount_price"),
+            stock=validated_data.get("stock"),
 
-        # crate images
+        )
+
+        # create images
+
         for image_data in images_data:
             ProductImage.objects.create(product=product, **image_data)
 
-        # crate features
+        # create features
         for feature_data in features_data:
             ProductFeature.objects.create(product=product, **feature_data)
+
+        return product
 
 
 class ProductOwnerUpdateSerializer(serializers.ModelSerializer):

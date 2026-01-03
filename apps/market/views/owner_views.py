@@ -1,4 +1,4 @@
-from rest_framework import views, status
+from rest_framework import views, status, permissions
 from rest_framework.response import Response
 from apps.market.models import Market
 from apps.market.serializer.market_serializer import (
@@ -12,12 +12,10 @@ from permissions.market import (
 
 class MarketOwnerCreateView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsMarketer,)
+    permission_classes = (permissions.IsAuthenticated, IsMarketer)
 
     def post(self, request):
-        self.check_permissions(request)
-
-        serializer = self.serializer_class(
+        serializer = MarketOwnerSerializer(
             data=request.data,
         )
 
@@ -30,13 +28,14 @@ class MarketOwnerCreateView(views.APIView):
             status=status.HTTP_201_CREATED
         )
 
+
 class MarketOwnerUpdateView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsMarketOwner,)
+    permission_classes = (IsMarketOwner, permissions.IsAuthenticated,)
 
-    def patch(self, request,market_id):
+    def patch(self, request, market_id):
 
-        try :
+        try:
             market = Market.objects.get(id=market_id)
         except Market.DoesNotExist:
             return Response(
@@ -48,7 +47,7 @@ class MarketOwnerUpdateView(views.APIView):
 
         self.check_object_permissions(request, market)
 
-        serializer = self.serializer_class(instance=market,data=request.data,partial=True)
+        serializer = self.serializer_class(instance=market, data=request.data, partial=True)
 
         serializer.is_valid(raise_exception=True)
 
@@ -59,12 +58,13 @@ class MarketOwnerUpdateView(views.APIView):
             status=status.HTTP_200_OK
         )
 
+
 class MarketOwnerDeleteView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsMarketOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsMarketOwner)
 
-    def delete(self, request,market_id):
-        try :
+    def delete(self, request, market_id):
+        try:
             market = Market.objects.get(id=market_id)
         except Market.DoesNotExist:
             return Response(
@@ -85,11 +85,12 @@ class MarketOwnerDeleteView(views.APIView):
             status=status.HTTP_200_OK
         )
 
+
 class MarketOwnerDetailView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsMarketOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsMarketOwner)
 
-    def get(self,request,market_id):
+    def get(self, request, market_id):
         try:
             market = Market.objects.get(id=market_id)
         except Market.DoesNotExist:
@@ -109,16 +110,15 @@ class MarketOwnerDetailView(views.APIView):
             status=status.HTTP_200_OK
         )
 
+
 class MarketOwnerListView(views.APIView):
     serializer_class = MarketOwnerSerializer
-    permission_classes = (IsMarketer,)
+    permission_classes = (permissions.IsAuthenticated, IsMarketer)
 
-    def get(self,request):
-        self.check_permissions(request)
-
+    def get(self, request):
         markets = Market.objects.filter(marketer__user=request.user)
 
-        serializer = MarketOwnerSerializer(instance=markets,many=True)
+        serializer = MarketOwnerSerializer(instance=markets, many=True)
 
         return Response(
             serializer.data,

@@ -31,7 +31,7 @@ class ProductCreateView(views.APIView):
 
         serializer.is_valid(raise_exception=True)
 
-        serializer.create(serializer.validated_data)
+        serializer.create(serializer.validated_data,market.id)
 
         return Response(
             data=serializer.data,
@@ -51,6 +51,8 @@ class ProductUpdateView(views.APIView):
         serializer = self.serializer_class(instance=product, data=request.data, partial=True)
 
         serializer.is_valid(raise_exception=True)
+
+        serializer.update(product,serializer.validated_data)
 
         return Response(
             data=serializer.data,
@@ -85,7 +87,16 @@ class ProductDetailView(views.APIView):
     permission_classes = (IsAuthenticated, IsProductOwner)
 
     def get(self, request, product_id):
-        product = Market.objects.get(id=product_id)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response(
+                data={
+                    "error": "product dose not exist"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 
         self.check_object_permissions(request, product)
 
@@ -106,8 +117,6 @@ class ProductListView(views.APIView):
     serializer_class = ProductDetailSerializer
 
     def get(self, request):
-        self.check_permissions(request)
-
         products = Product.objects.filter(market__marketer__user=request.user)
 
         serializer = ProductDetailSerializer(products, many=True)
@@ -126,6 +135,7 @@ class ProductImageCreateView(views.APIView):
     serializer_class = ProductImageSerializer
 
     def post(self, request, product_id):
+        self.check_permissions(request)
         try:
             product = Product.objects.get(id=product_id)
 
@@ -156,7 +166,6 @@ class ProductImageUpdateView(views.APIView):
     serializer_class = ProductImageSerializer
 
     def patch(self, request, product_id, image_id):
-
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:

@@ -1,5 +1,6 @@
 from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from core.manage_code import CodeManager
 from apps.user.models import User
 from rest_framework.response import Response
@@ -49,28 +50,26 @@ class UserVerifyCodeView(views.APIView):
             if serializer.is_valid():
                 phone = serializer.validated_data['phone']
                 user_code = CodeManager(request, phone)
-                user_code.load_code()
-                if user_code.check_code(code):
 
-                    user, _ = User.objects.get_or_create(phone=phone)
-                    token,_ = Token.objects.get_or_create(user=user)
+                if user_code.load_code():
+                    if user_code.check_code(code):
+                        user, is_user_create = User.objects.get_or_create(phone=phone)
+                        token, _ = Token.objects.get_or_create(user=user)
 
-                    response_data = {
-                        "mobile_number": phone,
-                        "token": token.key
-                    }
+                        #set_nuusable_pass
+                        if is_user_create:
+                            user.set_unusable_password()
+                            user.save()
 
-                    return Response(
-                        response_data,
-                        status=status.HTTP_201_CREATED
-                    )
-                else:
-                    return Response(
-                        data={
-                            'error': 'code is incorrect or expired'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+                        response_data = {
+                            "mobile_number": phone,
+                            "token": token.key
+                        }
+
+                        return Response(
+                            response_data,
+                            status=status.HTTP_201_CREATED
+                        )
             else:
                 return Response(
                     serializer.errors,
@@ -84,24 +83,31 @@ class UserVerifyCodeView(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        return Response(
+            data={
+                'error': 'code is incorrect or expired'
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
 
 class UserSetPasswordView(views.APIView):
     serializer_class = UserSetPasswordSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         success = False
-        #first_change
-        if not request.user.password :
+        # first_change
+        if not request.user.has_usable_password():
 
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 serializer.update(request.user, serializer.validated_data)
                 success = True
-                print("yes")
 
-        else :
+        else:
             old_password = request.data.get('old_password')
-            if request.user.check_password(old_password):
+            if request.user.check_password(old_password) and old_password:
                 serializer = self.serializer_class(data=request.data)
                 if serializer.is_valid():
                     serializer.update(request.user, serializer.validated_data)
@@ -130,7 +136,6 @@ class UserSetPasswordView(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
     def options(self, request, *args, **kwargs):
         data = {
             "data": [
@@ -138,7 +143,7 @@ class UserSetPasswordView(views.APIView):
                 "password2",
             ]
         }
-        if request.user.password :
+        if request.user.password:
             data['data'].append("old_password")
 
         return Response(
@@ -148,39 +153,32 @@ class UserSetPasswordView(views.APIView):
 
 
 class UserPasswordResetView(views.APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (IsAuthenticated,)
 
     serializer_class = UserRegisterSerializer
+
     def post(self, request):
 
         code = request.data.get("code")
         if code:
-            serializer = self.serializer_class(data=request.data)
-            if serializer.is_valid():
-                phone = serializer.validated_data['phone']
-                user_code = CodeManager(request, phone)
-                user_code.load_code()
+            phone = request.user.phone
+            user_code = CodeManager(request, phone)
+            if user_code.load_code():
                 if user_code.check_code(code):
-                    user = User.objects.get(phone=phone)
-                    user.password = ""
-                    user.save()
+                    request.user.set_unusable_password()
+                    request.user.save()
 
                     data = {
                         'success': True,
-                        'message' : "password has been reset!",
+                        'message': "password has been reset!",
                     }
                     return Response(
                         data,
                         status=status.HTTP_200_OK
                     )
-            else:
-                return Response(
-                    serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
 
         data = {
-            'code': 'code is incorrect or expired',
+            'error': 'code is incorrect or expired',
         }
         return Response(
             data,
@@ -189,7 +187,7 @@ class UserPasswordResetView(views.APIView):
 
 
 class UserChangeInfoView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserInformationSerializer
 
     def patch(self, request):
@@ -201,7 +199,7 @@ class UserChangeInfoView(views.APIView):
         if serializer.is_valid():
             serializer.update(request.user, serializer.validated_data)
 
-            return  Response(
+            return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
             )

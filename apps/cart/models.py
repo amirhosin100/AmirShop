@@ -12,6 +12,8 @@ class CartManager(models.Manager):
 
     @transaction.atomic
     def set(self, user, product, quantity=1):
+        if  quantity is None :
+            raise ValueError("Quantity is not None")
         if quantity <= 0:
             raise ValueError("Quantity must be positive")
 

@@ -6,6 +6,8 @@ from apps.user.views.user_registration_view import (
     UserPasswordResetView, UserChangeInfoView
 )
 
+app_name = 'user_registration'
+
 urlpatterns = [
     path("register/",UserRegistrationCreateCodeView.as_view(),name="register"),
     path("verify/",UserVerifyCodeView.as_view(),name="verify"),

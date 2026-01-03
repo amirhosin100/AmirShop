@@ -29,6 +29,8 @@ class ProductSimpleSerializer(serializers.ModelSerializer):
     # show just first image
     def get_image(self, image_object):
         image = image_object.images.first()
+        if not image:
+            return None
         return ProductImageSerializer(image).data
 
 

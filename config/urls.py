@@ -13,21 +13,27 @@ from drf_spectacular.views import (
 )
 
 api_urlpatterns = [
-    path('user/', include('apps.user.urls.user_registration_urls')),
+    path(
+        'user/',
+        include(
+            'apps.user.urls.user_registration_urls',
+            namespace='user_registration'
+        )
+    ),
 
-    path('user/market/', include('apps.market.urls.user_urls')),
+    path('user/market/', include('apps.market.urls.user_urls',namespace='market_user')),
 
-    path('user/product/', include('apps.product.urls.user_urls')),
+    path('user/product/', include('apps.product.urls.user_urls',namespace='product_user')),
 
-    path('user/cart/', include('apps.cart.urls.user_urls')),
+    path('user/cart/', include('apps.cart.urls.user_urls'),name='cart_user'),
 
-    path('owner/market/', include('apps.market.urls.owner_urls')),
+    path('owner/market/', include('apps.market.urls.owner_urls',namespace='market_owner')),
 
-    path('owner/product/', include('apps.product.urls.owner_urls')),
+    path('owner/product/', include('apps.product.urls.owner_urls',namespace='product_owner')),
 
-    path('market-request/', include('apps.market_request.urls')),
+    path('market-request/', include('apps.market_request.urls',namespace='market_request')),
 
-    path("", include('apps.user.urls.user_detail_urls')),
+    path("", include('apps.user.urls.user_detail_urls',namespace='user_detail')),
 
     # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

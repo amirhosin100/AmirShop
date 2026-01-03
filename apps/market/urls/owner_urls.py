@@ -7,6 +7,9 @@ from apps.market.views.owner_views import (
     MarketOwnerDetailView,
 )
 
+app_name = 'market_owner'
+
+
 urlpatterns = [
     path('create/', MarketOwnerCreateView.as_view(), name='create'),
     path('update/<str:market_id>/', MarketOwnerUpdateView.as_view(), name='update'),
