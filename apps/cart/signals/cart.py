@@ -1,12 +1,15 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save,post_delete
-from apps.cart.models import Cart,CartItem
+from apps.cart.models import CartItem
+from django.db.models import Sum
+
 
 def change_cart_amount(instance):
-    amount = 0
-    for item in instance.cart.items.all():
-        amount += item.final_price
-    instance.cart.amount = amount
+    amount = instance.cart.items.aggregate(amount=Sum('final_price'))['amount']
+    if amount:
+        instance.cart.amount = amount
+    else:
+        instance.cart.amount = 0
     instance.cart.save()
 
 @receiver(post_save, sender=CartItem)
