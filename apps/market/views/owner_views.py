@@ -21,6 +21,16 @@ class MarketOwnerCreateView(views.APIView):
 
         serializer.is_valid(raise_exception=True)
 
+        market_name = serializer.validated_data['name']
+
+        if request.user.marketer.markets.filter(name=market_name).exists():
+            return Response(
+                data={
+                    "error": "Market already exists"
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
         serializer.save(marketer=request.user.marketer)
 
         return Response(

@@ -1,4 +1,3 @@
-
 from rest_framework import test, status, permissions
 from unittest.mock import patch
 from uuid import uuid4
@@ -22,6 +21,9 @@ from apps.market.views.user_views import (
 class BaseMarketOwnerTest(test.APITestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.factory = test.APIRequestFactory()
+        cls.client = test.APIClient()
+
         cls.owner_user = User.objects.create(
             phone='09123456789'
         )
@@ -31,9 +33,8 @@ class BaseMarketOwnerTest(test.APITestCase):
         )
 
     def setUp(self):
-        self.factory = test.APIRequestFactory()
         self.client.force_authenticate(self.owner_user)
-        self.market = Market.objects.create(
+        self.market, _ = Market.objects.get_or_create(
             marketer=self.owner_user.marketer,
             name="test"
         )
@@ -52,13 +53,27 @@ class MarketOwnerCreateViewTest(BaseMarketOwnerTest):
         response = self.client.post(
             reverse('market_owner:create'),
             data={
-                "name": "test"
+                "name": "test_2"
             }
         )
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["name"], "test")
+        self.assertEqual(response.data["name"], "test_2")
         self.assertEqual(Market.objects.count(), 2)
+
+    def test_already_exist_market(self):
+        data = {"name": "same_market"}
+        response = self.client.post(
+            reverse('market_owner:create'),
+            data=data
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(
+            reverse('market_owner:create'),
+            data=data
+        )
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertIn('Market already exists', response.data['error'])
 
 
 class MarketOwnerUpdateViewTest(BaseMarketOwnerTest):
@@ -197,12 +212,14 @@ class BaseMarketUserTest(test.APITestCase):
         Marketer.objects.create(
             user=self.owner_user,
         )
-        self.market_active = Market.objects.create(
+        self.market_active, _ = Market.objects.get_or_create(
             marketer=self.owner_user.marketer,
+            name="test_market"
         )
-        self.market_dont_active = Market.objects.create(
+        self.market_dont_active, _ = Market.objects.get_or_create(
             marketer=self.owner_user.marketer,
             is_active=False,
+            name="test_market_dont_active"
         )
         self.client.force_authenticate(self.user)
 
@@ -214,7 +231,7 @@ class UserListViewTest(BaseMarketUserTest):
             reverse('market_user:list'),
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data),1)
+        self.assertEqual(len(response.data), 1)
 
 
 class UserDetailViewTest(BaseMarketUserTest):
