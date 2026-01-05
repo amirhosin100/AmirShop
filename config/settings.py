@@ -32,6 +32,12 @@ else:
     ALLOWED_HOSTS = []
 
 
+#csrf configurations
+csrf = os.environ.get('CSRF_TRUSTED_ORIGINS')
+if csrf:
+    CSRF_TRUSTED_ORIGINS = csrf.split(',')
+
+
 # Application definition
 
 INSTALLED_APPS = [
