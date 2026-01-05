@@ -43,8 +43,11 @@ class Market(BaseModel):
         default=True,
     )
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         unique_together = (("marketer", "name"),)
+        indexes = BaseModel.Meta.indexes + [
+            models.Index(fields=["name"]),
+        ]
 
     def __str__(self):
         return f"{self.name} -- {self.marketer.user.get_full_name()}"
