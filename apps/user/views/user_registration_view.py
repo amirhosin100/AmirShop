@@ -69,7 +69,7 @@ class UserVerifyCodeView(views.APIView):
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
-                if check:
+                if check :
                     user, is_user_create = User.objects.get_or_create(phone=phone)
                     token, _ = Token.objects.get_or_create(user=user)
 

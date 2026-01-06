@@ -1,9 +1,9 @@
-from datetime import  timedelta
+from datetime import timedelta
 from django.utils import timezone
 from rest_framework import test, status
 from rest_framework.test import APIRequestFactory, force_authenticate, APIClient
 from django.urls import reverse
-from apps.user.models import User,OTP
+from apps.user.models import User, OTP
 from rest_framework.authtoken.models import Token
 
 from apps.user.views.user_registration_view import (
@@ -12,6 +12,11 @@ from apps.user.views.user_registration_view import (
 
 
 class UserCreateCodeTest(test.APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.data = {
+            'phone': '09123456789'
+        }
 
     def test_correct_response(self):
         response = self.client.post(
@@ -61,6 +66,39 @@ class UserCreateCodeTest(test.APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual('phone must start with <09>', str(response.data['phone'][0]))
 
+    def test_double_sent_code(self):
+        response = self.client.post(
+            reverse('user_registration:register'),
+            data=self.data
+        )
+        self.assertEqual(OTP.objects.count(), 1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(
+            reverse('user_registration:register'),
+            data=self.data
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], 'Code already exists.')
+
+    def test_expired_code(self):
+        response = self.client.post(
+            reverse('user_registration:register'),
+            data=self.data
+        )
+        self.assertEqual(OTP.objects.count(), 1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        opt = OTP.objects.get()
+        # exprie time
+        opt.created_at = timezone.now() - timedelta(days=1)
+        opt.save()
+        response = self.client.post(
+            reverse('user_registration:register'),
+            data=self.data
+        )
+        self.assertEqual(OTP.objects.count(), 1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
 class UserVerifyCodeTest(test.APITestCase):
     phone_number = "09123456789"
@@ -83,6 +121,7 @@ class UserVerifyCodeTest(test.APITestCase):
             }
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(OTP.objects.count(), 0)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Token.objects.count(), 1)
 
@@ -112,7 +151,7 @@ class UserVerifyCodeTest(test.APITestCase):
             }
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"],  'Code is expired.')
+        self.assertEqual(response.data["error"], 'Code is expired.')
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Token.objects.count(), 0)
 
@@ -140,6 +179,28 @@ class UserVerifyCodeTest(test.APITestCase):
         self.assertEqual(response.data["error"], 'Code does not match.')
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Token.objects.count(), 0)
+
+    def test_double_sent_code(self):
+        response = self.client.post(
+            reverse('user_registration:verify'),
+            data={
+                'code': self.code,
+                'phone': self.phone_number,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(OTP.objects.count(), 0)
+        # send again
+        response = self.client.post(
+            reverse('user_registration:verify'),
+            data={
+                'code': self.code,
+                'phone': self.phone_number,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "Phone Number or Code does not exist.")
+        self.assertEqual(OTP.objects.count(), 0)
 
 
 class UserSetPasswordTest(test.APITestCase):
@@ -253,18 +314,21 @@ class UserResetPasswordTest(test.APITestCase):
                 'phone': self.user.phone,
             }
         )
+        self.assertEqual(OTP.objects.count(), 1)
         self.code = self.code_response.data['code']
+        self.data = {
+            'code': self.code,
+        }
 
     def test_correct_code(self):
         response = self.client.post(
             reverse('user_registration:reset_password'),
-            data={
-                'code': self.code,
-            }
+            data=self.data
         )
         self.user.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(self.user.has_usable_password())
+        self.assertEqual(OTP.objects.count(), 0)
 
     def test_empty_code(self):
         response = self.client.post(
@@ -272,8 +336,37 @@ class UserResetPasswordTest(test.APITestCase):
         )
         self.user.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(self.user.has_usable_password())
         self.assertIsNotNone(response.data.get('error'))
         self.assertIn('empty', response.data.get('error'))
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_incorrect_code(self):
+        response = self.client.post(
+            reverse('user_registration:reset_password'),
+            data={
+                "code" :"abc"
+            }
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(self.user.has_usable_password())
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_expired_code(self):
+        otp = OTP.objects.get(phone=self.user.phone)
+        otp.created_at = timezone.now() - timedelta(days=1)
+        otp.save()
+        response = self.client.post(
+            reverse('user_registration:reset_password'),
+            data=self.data
+        )
+
+        self.user.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], "Code is expired.")
+        self.assertTrue(self.user.has_usable_password())
+        self.assertEqual(OTP.objects.count(), 1)
 
 
 class UserChangeInfoTest(test.APITestCase):

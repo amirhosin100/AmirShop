@@ -56,14 +56,14 @@ class OTPManager(models.Manager):
                 opt = self.create(phone=phone)
 
             else:
-                raise ValueError('Phone Number with Code already exists.')
+                raise ValueError('Code already exists.')
 
         return opt
 
 
     def check_code(self, phone, code):
         if not self.filter(phone=phone).exists():
-            raise ValueError('Phone Number does not exist.')
+            raise ValueError('Phone Number or Code does not exist.')
 
         opt = self.get(phone=phone)
 
