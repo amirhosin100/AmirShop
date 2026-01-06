@@ -26,7 +26,7 @@ def get_test_image_file(name="test.jpg"):
 
 
 # ===================== BASE TEST SETUP =====================
-#@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
+@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestSetup(APITestCase):
 
     @classmethod
