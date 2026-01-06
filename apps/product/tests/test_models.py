@@ -20,7 +20,14 @@ class ProductModelTests(TestCase):
     def setUpTestData(cls):
         # ایجاد کاربر و مارکت
         cls.user = User.objects.create_user(phone="09909998877", password="password123")
-        Marketer.objects.create(user=cls.user)
+        Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
         cls.market = Market.objects.create(marketer=cls.user.marketer, name="TestMarket")
 
     def setUp(self):

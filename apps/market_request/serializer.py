@@ -9,6 +9,7 @@ class MarketRequestSerializer(serializers.ModelSerializer):
         fields = (
             'mobile_number',
             'city',
+            'national_code',
             'province',
             'description',
             'address',
@@ -43,3 +44,9 @@ class MarketRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("address must be at least 30 characters")
 
         return address
+
+    def validate_national_code(self,national_code):
+        if len(national_code) != 10:
+            raise serializers.ValidationError("national_code must be at least 10 characters")
+
+        return national_code

@@ -30,6 +30,11 @@ class BaseMarketOwnerTest(test.APITestCase):
 
         Marketer.objects.create(
             user=cls.owner_user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
         )
 
     def setUp(self):
@@ -211,6 +216,11 @@ class BaseMarketUserTest(test.APITestCase):
         )
         Marketer.objects.create(
             user=self.owner_user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
         )
         self.market_active, _ = Market.objects.get_or_create(
             marketer=self.owner_user.marketer,

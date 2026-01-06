@@ -36,7 +36,14 @@ class BaseTestSetup(APITestCase):
         cls.other_user = User.objects.create_user(phone="09907654321", password="pass")
 
         # Marketer and Market
-        cls.marketer = Marketer.objects.create(user=cls.user)
+        cls.marketer = Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
         cls.market = Market.objects.create(name="Test Market", marketer=cls.marketer)
 
     def setUp(self):

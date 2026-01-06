@@ -89,6 +89,11 @@ class MarketerModelTest(TestCase):
         )
         marketer = Marketer.objects.create(
             user=user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
         )
         self.assertEqual(str(marketer), '09876543211')
         self.assertEqual(Marketer.objects.count(), 1)
@@ -144,7 +149,6 @@ class OTPManagerTest(TestCase):
         check = OTP.codes.check_code(phone=self.phone, code=self.code)
         self.assertTrue(check)
         self.assertEqual(OTP.objects.count(), 0)
-
 
     def test_time_to_be_expired_by_incorrect_phone(self):
         with self.assertRaisesMessage(ValueError, 'Phone Number or Code does not exist.'):

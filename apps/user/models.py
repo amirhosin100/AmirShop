@@ -167,6 +167,25 @@ class Marketer(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('User')
     )
+    national_code = models.CharField(
+        max_length=10,
+        verbose_name=_('National Code'),
+    )
+    age = models.PositiveIntegerField(
+        verbose_name=_('Age'),
+    )
+    city = models.CharField(
+        max_length=30,
+        verbose_name=_('City'),
+    )
+    province = models.CharField(
+        max_length=30,
+        verbose_name=_('Province'),
+    )
+    address = models.CharField(
+        max_length=200,
+        verbose_name=_('Address'),
+    )
 
     def __str__(self):
         return self.user.phone

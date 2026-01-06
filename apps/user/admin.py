@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Marketer)
 class MarketerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user','national_code')
 
 
 @admin.register(OTP)

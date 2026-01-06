@@ -23,13 +23,18 @@ class MarketRequest(BaseModel):
         verbose_name=_("City"),
     )
 
+    national_code = models.CharField(
+        max_length=10,
+        verbose_name=_("National Code"),
+    )
+
     province = models.CharField(
         max_length=30,
         verbose_name=_("Province"),
     )
 
     address = models.CharField(
-        max_length=100,
+        max_length=200,
         verbose_name=_("Address"),
     )
 
