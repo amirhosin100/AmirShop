@@ -1,8 +1,9 @@
-from django.contrib.auth.models import AnonymousUser
+from datetime import  timedelta
+from django.utils import timezone
 from rest_framework import test, status
 from rest_framework.test import APIRequestFactory, force_authenticate, APIClient
 from django.urls import reverse
-from apps.user.models import User
+from apps.user.models import User,OTP
 from rest_framework.authtoken.models import Token
 
 from apps.user.views.user_registration_view import (
@@ -96,16 +97,12 @@ class UserVerifyCodeTest(test.APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Token.objects.count(), 0)
-        self.assertEqual(response.data["error"], 'code is incorrect or expired')
+        self.assertEqual(response.data["error"], 'Code does not match.')
 
     def test_expired_code(self):
-        session = self.client.session
-
-        data = session.get(self.phone_number)
-        data['expire_time'] = '2000-10-10 10:10:10'
-        session[self.phone_number] = data
-
-        session.save()
+        opt = OTP.objects.get(phone=self.phone_number)
+        opt.created_at = timezone.now() - timedelta(days=1)
+        opt.save()
 
         response = self.client.post(
             reverse('user_registration:verify'),
@@ -115,7 +112,7 @@ class UserVerifyCodeTest(test.APITestCase):
             }
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"], 'code is incorrect or expired')
+        self.assertEqual(response.data["error"],  'Code is expired.')
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Token.objects.count(), 0)
 
@@ -140,7 +137,7 @@ class UserVerifyCodeTest(test.APITestCase):
             }
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"], 'code is incorrect or expired')
+        self.assertEqual(response.data["error"], 'Code does not match.')
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Token.objects.count(), 0)
 
@@ -276,7 +273,7 @@ class UserResetPasswordTest(test.APITestCase):
         self.user.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNotNone(response.data.get('error'))
-        self.assertIn('code is incorrect or expired', response.data.get('error'))
+        self.assertIn('empty', response.data.get('error'))
 
 
 class UserChangeInfoTest(test.APITestCase):

@@ -3,7 +3,8 @@ from apps.user.views.user_registration_view import (
     UserRegistrationCreateCodeView,
     UserVerifyCodeView,
     UserSetPasswordView,
-    UserPasswordResetView, UserChangeInfoView
+    UserPasswordResetView,
+    UserChangeInfoView
 )
 
 app_name = 'user_registration'

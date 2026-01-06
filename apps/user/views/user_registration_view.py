@@ -1,8 +1,7 @@
 from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
-from core.manage_code import CodeManager
-from apps.user.models import User
+from apps.user.models import User, OTP
 from rest_framework.response import Response
 from apps.user.serializer.user_registration import (
     UserRegisterSerializer,
@@ -20,8 +19,18 @@ class UserRegistrationCreateCodeView(views.APIView):
 
         if serializer.is_valid():
             phone = serializer.validated_data['phone']
-            user_code = CodeManager(request, phone)
-            code = user_code.generate_code()
+
+            try:
+                otp = OTP.codes.create_code(phone=phone)
+            except ValueError as e:
+                return Response(
+                    data={
+                        'error': str(e),
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            code = otp.code
 
             data = {
                 "code": code,
@@ -49,27 +58,35 @@ class UserVerifyCodeView(views.APIView):
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 phone = serializer.validated_data['phone']
-                user_code = CodeManager(request, phone)
 
-                if user_code.load_code():
-                    if user_code.check_code(code):
-                        user, is_user_create = User.objects.get_or_create(phone=phone)
-                        token, _ = Token.objects.get_or_create(user=user)
+                try:
+                    check = OTP.codes.check_code(phone, code)
+                except ValueError as e:
+                    return Response(
+                        data={
+                            "error": str(e)
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
-                        #set_nuusable_pass
-                        if is_user_create:
-                            user.set_unusable_password()
-                            user.save()
+                if check:
+                    user, is_user_create = User.objects.get_or_create(phone=phone)
+                    token, _ = Token.objects.get_or_create(user=user)
 
-                        response_data = {
-                            "mobile_number": phone,
-                            "token": token.key
-                        }
+                    # set_unusable_pass
+                    if is_user_create:
+                        user.set_unusable_password()
+                        user.save()
 
-                        return Response(
-                            response_data,
-                            status=status.HTTP_201_CREATED
-                        )
+                    response_data = {
+                        "mobile_number": phone,
+                        "token": token.key
+                    }
+
+                    return Response(
+                        response_data,
+                        status=status.HTTP_201_CREATED
+                    )
             else:
                 return Response(
                     serializer.errors,
@@ -82,13 +99,6 @@ class UserVerifyCodeView(views.APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        return Response(
-            data={
-                'error': 'code is incorrect or expired'
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
 
 class UserSetPasswordView(views.APIView):
@@ -162,28 +172,36 @@ class UserPasswordResetView(views.APIView):
         code = request.data.get("code")
         if code:
             phone = request.user.phone
-            user_code = CodeManager(request, phone)
-            if user_code.load_code():
-                if user_code.check_code(code):
-                    request.user.set_unusable_password()
-                    request.user.save()
+            try:
+                check = OTP.codes.check_code(phone, code)
+            except ValueError as e:
+                return Response(
+                    data={
+                        "error": str(e)
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-                    data = {
-                        'success': True,
-                        'message': "password has been reset!",
-                    }
-                    return Response(
-                        data,
-                        status=status.HTTP_200_OK
-                    )
+            if check:
+                request.user.set_unusable_password()
+                request.user.save()
 
-        data = {
-            'error': 'code is incorrect or expired',
-        }
-        return Response(
-            data,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+                data = {
+                    'success': True,
+                    'message': "password has been reset!",
+                }
+                return Response(
+                    data,
+                    status=status.HTTP_200_OK
+                )
+        else:
+            data = {
+                'error': 'code is empty',
+            }
+            return Response(
+                data,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserChangeInfoView(views.APIView):
