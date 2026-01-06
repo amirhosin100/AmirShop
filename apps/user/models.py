@@ -43,15 +43,15 @@ class UserManager(BaseUserManager):
 
 
 class OTPManager(models.Manager):
-    def create_code(self,phone):
+    def create_code(self, phone):
 
         if not self.filter(phone=phone).exists():
             opt = self.create(phone=phone)
 
         else:
             opt = self.get(phone=phone)
-            if not opt.is_active :
-                #delete and make it again
+            if not opt.is_active:
+                # delete and make it again
                 opt.delete()
                 opt = self.create(phone=phone)
 
@@ -59,7 +59,6 @@ class OTPManager(models.Manager):
                 raise ValueError('Code already exists.')
 
         return opt
-
 
     def check_code(self, phone, code):
         if not self.filter(phone=phone).exists():
@@ -79,7 +78,7 @@ class OTPManager(models.Manager):
 
     def time_to_be_expired(self, phone):
         if not self.filter(phone=phone).exists():
-            raise ValueError('Phone Number does not exist.')
+            raise ValueError('Phone Number or Code does not exist.')
 
         opt = self.get(phone=phone)
 
