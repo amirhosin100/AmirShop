@@ -27,6 +27,7 @@ class BaseTest(test.APITestCase):
             "address": f"{'address' * 5}",
             "description": f"{'description_' * 10}",
             "national_code": f"1234567890",
+            "age":30,
         }
         self.market_request_example = MarketRequest.objects.create(
             user=self.user,

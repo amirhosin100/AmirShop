@@ -41,6 +41,9 @@ class MarketRequest(BaseModel):
     description = models.TextField(
         verbose_name=_("Description"),
     )
+    age = models.PositiveIntegerField(
+        verbose_name=_("Age"),
+    )
 
     class Meta(BaseModel.Meta):
         indexes = BaseModel.Meta.indexes + [
