@@ -17,6 +17,10 @@ class MarketRequest(BaseModel):
         max_length=11,
         verbose_name=_("Mobile Number"),
     )
+    #email for sent notification
+    email = models.EmailField(
+        verbose_name=_("Email"),
+    )
 
     city = models.CharField(
         max_length=30,

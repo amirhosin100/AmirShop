@@ -24,6 +24,7 @@ class MarketRequestSerializerTest(test.APITestCase):
             "description" : f"{'description_'*10}",
             "national_code" : "1234567890",
             "age": 30,
+            "email" :"test@email.com",
         }
 
     def test_read_only_fields(self):

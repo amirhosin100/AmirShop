@@ -8,6 +8,7 @@ class MarketRequestSerializer(serializers.ModelSerializer):
         model = MarketRequest
         fields = (
             'mobile_number',
+            'email',
             'age',
             'city',
             'national_code',
