@@ -83,6 +83,18 @@ class MarketRequestSerializerTest(test.APITestCase):
             serializer.is_valid(raise_exception=True)
         self.assertEqual(MarketRequest.objects.count(), 0)
 
+    def test_less_than_age(self):
+        self.data['age'] = 17
+        serializer = MarketRequestSerializer(data=self.data)
+        with self.assertRaisesMessage(ValidationError,'age must be at least 18 years old'):
+            serializer.is_valid(raise_exception=True)
+
+    def test_greater_than_age(self):
+        self.data['age'] = 101
+        serializer = MarketRequestSerializer(data=self.data)
+        with self.assertRaisesMessage(ValidationError,'invalid age'):
+            serializer.is_valid(raise_exception=True)
+
     def test_correct_data(self):
         serializer = MarketRequestSerializer(data=self.data)
         self.assertTrue(serializer.is_valid())
