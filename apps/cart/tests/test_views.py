@@ -19,10 +19,24 @@ class CartViewsTestCase(APITestCase):
     def setUpTestData(cls):
         # Create test users and marketers
         cls.user = User.objects.create_user(phone="09123456789", password="testpass123")
-        Marketer.objects.create(user=cls.user)
+        Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
 
         cls.user2 = User.objects.create_user(phone="09876543210", password="anotherpass")
-        Marketer.objects.create(user=cls.user2)
+        Marketer.objects.create(
+            user=cls.user2,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
 
         # Create market and products
         cls.market = Market.objects.create(marketer=cls.user.marketer, name="Test Market")

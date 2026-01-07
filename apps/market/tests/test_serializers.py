@@ -9,7 +9,7 @@ class MarketOwnerSerializerTest(test.APITestCase):
 
     def test_has_correct_fields(self):
         self.assertCountEqual(
-            ['created_at', 'updated_at','id'],
+            ['created_at', 'updated_at','id','is_active'],
             MarketOwnerSerializer.Meta.read_only_fields
         )
         self.assertCountEqual(

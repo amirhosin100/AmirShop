@@ -17,7 +17,14 @@ class CartItemSerializerTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(phone="09123456789", password="testpass123")
-        Marketer.objects.create(user=cls.user)
+        Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
         cls.market = Market.objects.create(marketer=cls.user.marketer, name="Test Market")
 
         cls.product = Product.objects.create(
@@ -99,7 +106,14 @@ class CartSerializerTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(phone="09121234567", password="testpass")
-        Marketer.objects.create(user=cls.user)
+        Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
         cls.market = Market.objects.create(marketer=cls.user.marketer, name="Another Market")
 
         cls.product1 = Product.objects.create(

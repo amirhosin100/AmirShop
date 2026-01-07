@@ -19,7 +19,14 @@ class CartAndCartItemTest(TestCase):
     def setUpTestData(cls):
         """Create shared test data: user, marketer, and market."""
         cls.user = User.objects.create_user(phone="09123456789", password="testpass123")
-        Marketer.objects.create(user=cls.user)
+        Marketer.objects.create(
+            user=cls.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
 
         cls.market = Market.objects.create(
             marketer=cls.user.marketer,

@@ -31,7 +31,14 @@ class ProductSerializerTests(TestCase):
     def setUp(self):
         # user / marketer / market
         self.user = User.objects.create_user(phone="09909998877", password="123456")
-        self.marketer = Marketer.objects.create(user=self.user)
+        self.marketer = Marketer.objects.create(
+            user=self.user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
+        )
         self.market = Market.objects.create(
             marketer=self.marketer,
             name="Test Market"

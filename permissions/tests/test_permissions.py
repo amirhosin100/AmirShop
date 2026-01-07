@@ -75,6 +75,11 @@ class IsMarketerTest(PermissionTest):
 
         Marketer.objects.create(
             user=cls.owner_user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
         )
 
     def test_all(self):

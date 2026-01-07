@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserChangeForm,UserCreationForm
-from .models import User, Marketer
+from .models import User, Marketer,OTP
 
 
 @admin.register(User)
@@ -30,4 +30,11 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Marketer)
 class MarketerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user','national_code')
+
+
+@admin.register(OTP)
+class OTPAdmin(admin.ModelAdmin):
+    list_display = ['phone','code']
+    search_fields = ['phone']
+    readonly_fields = ['created_at','code']

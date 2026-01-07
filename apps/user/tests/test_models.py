@@ -1,5 +1,14 @@
+from datetime import timedelta
+
 from django.test import TestCase
-from apps.user.models import User,Marketer
+from django.utils import timezone
+
+from apps.user.models import (
+    User,
+    Marketer,
+    OTPManager,
+    OTP
+)
 
 
 class UserModelFieldTest(TestCase):
@@ -80,6 +89,95 @@ class MarketerModelTest(TestCase):
         )
         marketer = Marketer.objects.create(
             user=user,
+            age=20,
+            national_code="1234567890",
+            city="city",
+            province="province",
+            address="address",
         )
         self.assertEqual(str(marketer), '09876543211')
         self.assertEqual(Marketer.objects.count(), 1)
+
+
+class OTPManagerTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.phone = '09123456789'
+
+    def setUp(self):
+        self.otp = OTP.codes.create_code(phone=self.phone)
+        self.code = self.otp.code
+
+    def test_create_code_method(self):
+        self.assertEqual(OTP.objects.count(), 1)
+
+        # create again
+        with self.assertRaisesMessage(ValueError, 'Code already exists.'):
+            OTP.codes.create_code(phone=self.phone)
+
+        self.assertEqual(OTP.objects.count(), 1)
+
+        # make expire
+        otp = OTP.objects.get(phone=self.phone)
+        otp.created_at = timezone.now() - timedelta(days=1)
+        otp.save()
+        OTP.codes.create_code(phone=self.phone)
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_by_incorrect_phone(self):
+        # test by incorrect phone
+        with self.assertRaisesMessage(ValueError, 'Phone Number or Code does not exist.'):
+            OTP.codes.check_code(phone="09137776655", code=self.code)
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_by_not_active(self):
+        # test by not active
+        self.otp.created_at = timezone.now() - timedelta(days=1)
+        self.otp.save()
+        with self.assertRaisesMessage(ValueError, 'Code is expired.'):
+            OTP.codes.check_code(phone=self.phone, code=self.code)
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_by_incorrect_code(self):
+        # test by incorrect code
+        with self.assertRaisesMessage(ValueError, 'Code does not match.'):
+            OTP.codes.check_code(phone=self.phone, code='1234a')
+        self.assertEqual(OTP.objects.count(), 1)
+
+    def test_correct_code(self):
+        check = OTP.codes.check_code(phone=self.phone, code=self.code)
+        self.assertTrue(check)
+        self.assertEqual(OTP.objects.count(), 0)
+
+    def test_time_to_be_expired_by_incorrect_phone(self):
+        with self.assertRaisesMessage(ValueError, 'Phone Number or Code does not exist.'):
+            OTP.codes.time_to_be_expired(phone='09123456700')
+
+    def test_time_to_be_expired_by_not_active(self):
+        self.otp.created_at = timezone.now() - timedelta(days=1)
+        self.otp.save()
+        self.assertFalse(OTP.codes.time_to_be_expired(phone=self.phone))
+
+    def test_correct_time_to_be_expired_method(self):
+        self.assertIsNotNone(OTP.codes.time_to_be_expired(phone=self.phone))
+
+
+class OTPModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.phone = '09123456789'
+        cls.otp = OTP.objects.create(phone=cls.phone)
+
+    def setUp(self):
+        self.assertIsNotNone(self.otp.code)
+
+    def test_is_active_expire(self):
+        self.otp.created_at = timezone.now() - timedelta(days=1)
+        self.otp.save()
+        self.assertFalse(self.otp.is_active)
+
+    def test_is_active_not_expire(self):
+        self.otp.created_at = timezone.now()
+        self.otp.save()
+        self.assertTrue(self.otp.is_active)

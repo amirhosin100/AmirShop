@@ -8,7 +8,10 @@ class MarketRequestSerializer(serializers.ModelSerializer):
         model = MarketRequest
         fields = (
             'mobile_number',
+            'email',
+            'age',
             'city',
+            'national_code',
             'province',
             'description',
             'address',
@@ -19,7 +22,7 @@ class MarketRequestSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def validate_mobile_number(self, mobile_number):
-        success,message = check_phone(mobile_number)
+        success, message = check_phone(mobile_number)
 
         if success:
             return mobile_number
@@ -32,14 +35,27 @@ class MarketRequestSerializer(serializers.ModelSerializer):
 
         return city
 
-    def validate_description(self,description):
+    def validate_description(self, description):
         if len(description) < 100:
             raise serializers.ValidationError("description must be at least 100 characters")
 
         return description
 
-    def validate_address(self,address):
+    def validate_address(self, address):
         if len(address) < 30:
             raise serializers.ValidationError("address must be at least 30 characters")
 
         return address
+
+    def validate_national_code(self, national_code):
+        if len(national_code) != 10:
+            raise serializers.ValidationError("national_code must be at least 10 characters")
+
+        return national_code
+
+    def validate_age(self, age):
+        if age < 18:
+            raise serializers.ValidationError("age must be at least 18 years old")
+        if age > 100 :
+            raise serializers.ValidationError("invalid age")
+        return age

@@ -14,7 +14,7 @@ class Market(BaseModel):
     )
     icon = ResizedImageField(
         upload_to="market/icons",
-        crop=["center", "middle"],
+        crop=["middle", "center"],
         quality=100,
         size=[500, 500],
         null=True,
@@ -42,6 +42,12 @@ class Market(BaseModel):
     is_active = models.BooleanField(
         default=True,
     )
+
+    class Meta(BaseModel.Meta):
+        unique_together = (("marketer", "name"),)
+        indexes = BaseModel.Meta.indexes + [
+            models.Index(fields=["name"]),
+        ]
 
     def __str__(self):
         return f"{self.name} -- {self.marketer.user.get_full_name()}"
