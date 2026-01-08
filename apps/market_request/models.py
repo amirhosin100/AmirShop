@@ -5,6 +5,12 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 class MarketRequest(BaseModel):
+
+    class StatusChoices(models.TextChoices):
+        DRAFT = "df", _("Draft")
+        PASSED = "pd", _("Passed")
+        REJECTED = "rj", _("Rejected")
+
     user = models.ForeignKey(
        "user.User",
         on_delete=models.SET_NULL,
@@ -45,8 +51,16 @@ class MarketRequest(BaseModel):
     description = models.TextField(
         verbose_name=_("Description"),
     )
+
     age = models.PositiveIntegerField(
         verbose_name=_("Age"),
+    )
+
+    status = models.CharField(
+        max_length=2,
+        choices=StatusChoices.choices,
+        default=StatusChoices.DRAFT,
+        verbose_name=_("Status"),
     )
 
     class Meta(BaseModel.Meta):

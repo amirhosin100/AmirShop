@@ -29,7 +29,7 @@ class MarketRequestSerializerTest(test.APITestCase):
 
     def test_read_only_fields(self):
         self.assertCountEqual(
-            ('id', 'created_at', 'updated_at'),
+            ('id', 'created_at', 'updated_at','status'),
             MarketRequestSerializer.Meta.read_only_fields
         )
 

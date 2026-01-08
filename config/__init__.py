@@ -1,1 +1,1 @@
-from celery_conf import celery_app
+from config.celery_conf import celery_app

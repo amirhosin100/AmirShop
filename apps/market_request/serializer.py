@@ -16,10 +16,11 @@ class MarketRequestSerializer(serializers.ModelSerializer):
             'description',
             'address',
             'id',
+            'status',
             'created_at',
             'updated_at',
         )
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at','status')
 
     def validate_mobile_number(self, mobile_number):
         success, message = check_phone(mobile_number)

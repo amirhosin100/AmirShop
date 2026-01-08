@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9#ae0+06uv#owl%n81ctc085&gizm&%(q=_yc!phfarl=_8(v)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG').lower() == 'true'
+DEBUG = os.environ.get('DEBUG','').lower() == 'true'
 
 allowed_hosts = os.environ.get('ALLOWED_HOSTS')
 if allowed_hosts:
@@ -95,17 +97,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-
-DATABASES = {
-    'default': {
-        'ENGINE' : 'django.db.backends.postgresql',
-        'NAME' : os.environ.get('POSTGRES_DB'),
-        'USER' : os.environ.get('POSTGRES_USER'),
-        'PASSWORD' : os.environ.get('POSTGRES_PASSWORD'),
-        'HOST' : 'postgres',
-        'PORT' : "5432",
+if os.environ.get('DATABASE','postgres') == 'postgres':
+    DATABASES = {
+        'default': {
+            'ENGINE' : 'django.db.backends.postgresql',
+            'NAME' : os.environ.get('POSTGRES_DB'),
+            'USER' : os.environ.get('POSTGRES_USER'),
+            'PASSWORD' : os.environ.get('POSTGRES_PASSWORD'),
+            'HOST' : 'postgres',
+            'PORT' : "5432",
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE' : 'django.db.backends.sqlite3',
+            'NAME' : BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -179,4 +188,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 #CELERY CONFIGURATIONS
-
+rabbitmq_user = os.environ.get('RABBITMQ_USER')
+rabbitmq_password = os.environ.get('RABBITMQ_PASSWORD')
+CELERY_BROKER_URL = f'amqp://{rabbitmq_user}:{rabbitmq_password}@localhost:5672'
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_ACKS_LATE = True
