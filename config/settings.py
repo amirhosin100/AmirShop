@@ -60,7 +60,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',
     'drf_spectacular_sidecar',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    #celery
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
