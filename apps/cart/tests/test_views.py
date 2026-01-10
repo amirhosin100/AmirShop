@@ -6,7 +6,7 @@ import uuid
 
 from apps.market.models import Market
 from apps.product.models import Product
-from apps.cart.models import Cart, CartItem
+from apps.cart.models import Cart, CartItem, CartInfo
 from apps.user.models import Marketer
 
 User = get_user_model()
@@ -51,7 +51,7 @@ class CartViewsTestCase(APITestCase):
             market=cls.market,
             name="Product 2",
             price=200_000,
-            percentage_off=0,   # discount_price = 200_000
+            percentage_off=0,  # discount_price = 200_000
             stock=50,
         )
 
@@ -155,7 +155,7 @@ class CartViewsTestCase(APITestCase):
         """POST decrease on missing item fails."""
         response = self.client.post(self.decrease_item_url(self.product1.id))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("product don't exist to cart", response.data['message'])
+        self.assertIn("This product don't exist in your cart", response.data['message'])
 
     def test_decrease_nonexistent_product_fails(self):
         """POST decrease with invalid product_id 404."""
@@ -305,3 +305,56 @@ class CartViewsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CartItem.objects.filter(cart=self.cart).count(), 1)
         self.assertEqual(CartItem.objects.get(cart=self.cart).product, self.product2)
+
+
+class CartInfoTestCase(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.main_user = User.objects.create(
+            phone='09123456789',
+        )
+        cls.other_user = User.objects.create(
+            phone='09123456799',
+        )
+        cls.cart_info = CartInfo.objects.create(
+            user=cls.main_user,
+            amount=100
+        )
+        cls.detail_url = lambda pk: reverse('cart_user:cart_info_detail', kwargs={'pk': pk})
+        cls.list_url = reverse('cart_user:cart_info_list')
+
+    def setUp(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.main_user)
+
+    def test_detail_by_anonymous_user(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(
+            self.detail_url(self.cart_info.id)
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_detail_by_other_user(self):
+        self.client.force_authenticate(user=self.other_user)
+        response = self.client.get(
+            self.detail_url(self.cart_info.id)
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_detail_by_owner_user(self):
+        response = self.client.get(
+            self.detail_url(self.cart_info.id)
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['amount'], 100)
+
+    def test_list_by_anonymous_user(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_by_authenticate_user(self):
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
