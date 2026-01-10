@@ -1,13 +1,15 @@
-from rest_framework import views, status
+from rest_framework import views, status, generics
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from apps.cart.serializer.user_serializer import (
     CartSerializer,
     CartItemSerializer,
+    CartInfoDetailSerializer
 )
 from apps.cart.models import (
     Cart,
+    CartInfo
 )
 from apps.product.models import Product
 
@@ -70,7 +72,7 @@ class DecreaseCartItemView(views.APIView):
         except ValueError:
             return Response(
                 data={
-                    "message": "product don't exist to cart",
+                    "message": "This product don't exist in your cart",
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -101,7 +103,7 @@ class SetItemQuantityView(views.APIView):
         serializer = CartItemSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
-        if not serializer.validated_data.get('quantity') :
+        if not serializer.validated_data.get('quantity'):
             return Response(
                 data={
                     "error": "quantity is required",
@@ -173,3 +175,21 @@ class CartClearView(views.APIView):
             serializer.data,
             status=status.HTTP_200_OK,
         )
+
+
+class CartInfoListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartInfoDetailSerializer
+
+    def get_queryset(self):
+        queryset = CartInfo.objects.filter(user=self.request.user)
+        return queryset
+
+
+class CartInfoDetailView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartInfoDetailSerializer
+
+    def get_queryset(self):
+        queryset = CartInfo.objects.filter(user=self.request.user)
+        return queryset

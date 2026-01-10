@@ -2,6 +2,7 @@ from rest_framework import serializers
 from apps.cart.models import (
     Cart,
     CartItem,
+    CartInfo
 )
 
 
@@ -34,6 +35,7 @@ class CartItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Quantity must be positive')
         return quantity
 
+
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True)
 
@@ -48,4 +50,16 @@ class CartSerializer(serializers.ModelSerializer):
             'id',
             'amount',
             'items'
+        )
+
+
+class CartInfoDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartInfo
+        fields = (
+            'id',
+            'amount',
+            'items',
+            'created_at',
+            'status',
         )

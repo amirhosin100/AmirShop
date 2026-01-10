@@ -6,7 +6,9 @@ from apps.cart.views.user_views import (
     AddToCartView,
     RemoveCartItemView,
     DecreaseCartItemView,
-    SetItemQuantityView
+    SetItemQuantityView,
+    CartInfoListView,
+    CartInfoDetailView
 )
 
 app_name = 'cart_user'
@@ -18,4 +20,7 @@ urlpatterns = [
     path('remove/<str:product_id>/', RemoveCartItemView.as_view(), name='remove_cart'),
     path('set/<str:product_id>/', SetItemQuantityView.as_view(), name='set_item_quantity'),
     path('decrease/<str:product_id>/', DecreaseCartItemView.as_view(), name='decrease_item'),
+
+    path('info/list/', CartInfoListView.as_view(), name='cart_detail_list'),
+    path('info/detail/<str:pk>/', CartInfoDetailView.as_view(), name='cart_detail_detail'),
 ]

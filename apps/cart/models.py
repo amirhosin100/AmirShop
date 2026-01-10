@@ -127,3 +127,52 @@ class CartItem(BaseModel):
     def save(self, *args, **kwargs):
         self.final_price = self.quantity * self.product.discount_price
         super().save(*args, **kwargs)
+
+
+class CartInfo(BaseModel):
+
+    class CartStatus(models.TextChoices):
+        IN_MARKET = 'in_market', _("In market")
+        WAREHOUSE = 'warehouse', _("Warehouse")
+        BROADCAST = 'broadcast', _("Broadcast")
+        POST_OFFICE = 'post_office', _("Post Office")
+        POST_OFFICER = 'post_officer', _("Post Officer")
+        RECEIVED = 'received', _("Received")
+        CANCELED = 'canceled', _("Canceled")
+
+
+
+    user = models.ForeignKey(
+        'user.User',
+        on_delete=models.CASCADE,
+        related_name="carts_info",
+        verbose_name=_("User"),
+    )
+
+    amount = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Amount")
+    )
+
+    items = models.JSONField(
+        default=dict,
+        verbose_name=_("Items"),
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=CartStatus.choices,
+        default=CartStatus.IN_MARKET,
+        verbose_name=_("Status")
+    )
+
+    class Meta(BaseModel.Meta):
+        indexes = BaseModel.Meta.indexes + [
+            models.Index(fields=["status"], name="status_index"),
+            models.Index(fields=["amount"], name="amount_index"),
+            models.Index(fields=["user"], name="user_index"),
+        ]
+
+    def __str__(self):
+        return f"{str(self.user)} : {self.status}"
+
