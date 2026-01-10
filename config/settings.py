@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'apps.cart.apps.CartConfig',
     'apps.transaction.apps.TransactionConfig',
     'apps.market_request.apps.MarketRequestConfig',
+    'apps.payment.apps.PaymentConfig',
     #api
     'rest_framework.authtoken',
     'drf_spectacular',
