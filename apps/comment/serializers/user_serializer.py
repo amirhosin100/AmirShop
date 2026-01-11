@@ -23,9 +23,8 @@ class CommentSerializer(serializers.ModelSerializer):
             'images',
             'created_at',
             'updated_at',
-            'status',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'status']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate_score(self, score):
         if not 1 <= score <= 5:
