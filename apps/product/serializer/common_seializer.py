@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from apps.comment.models import Comment
 from apps.comment.serializers.user_serializer import CommentSerializer
 from apps.product.models import (
     ProductImage,
@@ -37,7 +39,7 @@ class ProductFeatureSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True,read_only=True)
     features = ProductFeatureSerializer(many=True,read_only=True)
-    comments = CommentSerializer(many=True,read_only=True)
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -54,3 +56,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "stock",
         ]
         read_only_fields = ['id']
+
+    def get_comments(self, obj):
+        comments = Comment.published.filter(product_id=obj.id)
+        serializer = CommentSerializer(comments, many=True, read_only=True)
+        return serializer.data

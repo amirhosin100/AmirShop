@@ -20,7 +20,7 @@ from apps.product.serializer.owner_serializer import (
     ProductOwnerCreateSerializer,
     ProductOwnerUpdateSerializer,
 )
-from apps.product.serializer.user_seializer import ProductSimpleSerializer
+from apps.product.serializer.user_serializer import ProductSimpleSerializer
 
 TEST_MEDIA_ROOT = os.path.join(os.path.dirname(__file__), "test_media")
 

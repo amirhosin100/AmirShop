@@ -2,7 +2,7 @@ from rest_framework import views, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from apps.product.models import Product
-from apps.product.serializer.user_seializer import (
+from apps.product.serializer.user_serializer import (
     ProductSimpleSerializer
 )
 from apps.product.serializer.common_seializer import (
