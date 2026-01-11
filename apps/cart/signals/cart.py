@@ -6,10 +6,8 @@ from django.db.models import Sum
 
 def change_cart_amount(instance):
     amount = instance.cart.items.aggregate(amount=Sum('final_price'))['amount']
-    if amount:
-        instance.cart.amount = amount
-    else:
-        instance.cart.amount = 0
+
+    instance.cart.amount = amount if amount else 0
     instance.cart.save()
 
 @receiver(post_save, sender=CartItem)

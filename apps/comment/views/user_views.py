@@ -52,7 +52,7 @@ class CommentImageCreateView(views.APIView):
 
         serializer = CommentImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(comment=comment, user=request.user)
+        serializer.save(comment=comment)
 
         return Response(
             data=serializer.data,

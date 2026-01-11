@@ -22,12 +22,12 @@ class CommentDetailView(generics.RetrieveAPIView):
     lookup_field = 'comment_id'
 
     def retrieve(self, request, *args, **kwargs):
-        print(request.user)
+
         try:
             query = Comment.objects.filter(
                 product__market__marketer__user=request.user,
             )
-            print(query)
+
             comment = query.get(id=str(kwargs[self.lookup_field]))
         except Comment.DoesNotExist:
             return Response(

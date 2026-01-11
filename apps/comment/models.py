@@ -55,8 +55,7 @@ class Comment(BaseModel):
     def __str__(self):
         return f'{self.user.get_full_name()} : {self.content[:20]}'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def change_product_score(self):
         final_score = 0
         query = Comment.published.filter(product=self.product)
         number = query.count() if query.count() else 0
@@ -66,6 +65,14 @@ class Comment(BaseModel):
         if number:
             self.product.score = final_score / number
             self.product.save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.change_product_score()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.change_product_score()
 
 
 class CommentImage(BaseModel):
@@ -77,6 +84,7 @@ class CommentImage(BaseModel):
     )
 
     image = models.ImageField(
+        upload_to='comment/images/%Y/%m/%d',
         verbose_name=_('Image'),
     )
 

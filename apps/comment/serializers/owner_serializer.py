@@ -21,7 +21,6 @@ class CommentDetailSerializer(serializers.ModelSerializer):
         model = Comment
         fields = [
             'id',
-            'user',
             'user_name',
             'product',
             'product_name',
@@ -29,6 +28,8 @@ class CommentDetailSerializer(serializers.ModelSerializer):
             'images',
             'score',
             'status',
+            'created_at',
+            'updated_at',
         ]
 
     def get_user_name(self, obj):
