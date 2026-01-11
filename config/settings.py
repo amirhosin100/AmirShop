@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.transaction.apps.TransactionConfig',
     'apps.market_request.apps.MarketRequestConfig',
     'apps.payment.apps.PaymentConfig',
+    'apps.comment.apps.CommentConfig',
     #api
     'rest_framework.authtoken',
     'drf_spectacular',

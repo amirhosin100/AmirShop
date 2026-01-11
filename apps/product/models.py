@@ -14,30 +14,49 @@ class Product(BaseModel):
         related_name='products',
         verbose_name=_('Market'),
     )
+
     name = models.CharField(
         max_length=255,
         verbose_name=pgettext_lazy("Product name", "name"),
     )
+
     description = models.TextField(
         max_length=2000,
         blank=True,
         null=True,
         verbose_name=_("Description"),
     )
+
     price = models.PositiveIntegerField(
         verbose_name=_("Price"),
     )
+
     percentage_off = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Percentage off"),
     )
+
     discount_price = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Discount price"),
     )
+
     stock = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Stock"),
+    )
+
+    summary_comments = models.TextField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name=_("Summary Comments"),
+    )
+
+    score = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name=_("Score"),
     )
 
     def __str__(self):
@@ -75,7 +94,7 @@ class ProductImage(models.Model):
     )
 
     def __str__(self):
-        return self.title
+        return self.title if self.title else "untitled"
 
 class ProductFeature(models.Model):
     product = models.ForeignKey(

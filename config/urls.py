@@ -33,9 +33,13 @@ api_urlpatterns = [
 
     path('user/cart/', include('apps.cart.urls.user_urls'),name='cart_user'),
 
+    path('user/comment/', include('apps.comment.urls.user_urls',namespace='comment_user')),
+
     path('owner/market/', include('apps.market.urls.owner_urls',namespace='market_owner')),
 
     path('owner/product/', include('apps.product.urls.owner_urls',namespace='product_owner')),
+
+    path('owner/comment/', include('apps.comment.urls.owner_urls',namespace='comment_owner')),
 
     path('market-request/', include('apps.market_request.urls',namespace='market_request')),
 

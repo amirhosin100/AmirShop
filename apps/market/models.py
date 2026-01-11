@@ -39,6 +39,10 @@ class Market(BaseModel):
         null=True,
         blank=True,
     )
+    score = models.FloatField(
+        null=True,
+        blank=True,
+    )
     is_active = models.BooleanField(
         default=True,
     )

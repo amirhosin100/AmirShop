@@ -7,6 +7,7 @@ from apps.product.models import (
 
 class ProductImageSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
+    image = serializers.ImageField(write_only=True)
 
     class Meta:
         model = ProductImage

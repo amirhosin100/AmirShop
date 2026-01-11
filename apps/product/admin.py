@@ -14,7 +14,7 @@ class ProductFeatureInline(admin.StackedInline):
 
 @admin.register(Product)
 class ProductAdmin(BaseAdmin):
-    list_display = ["market","name","price","percentage_off","discount_price"]
+    list_display = ["market","name","price","percentage_off","discount_price","score"]
     search_fields = ["name"]
     inlines = [ProductFeatureInline,ProductImageInline]
 
