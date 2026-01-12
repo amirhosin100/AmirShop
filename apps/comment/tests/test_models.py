@@ -7,7 +7,6 @@ class CommentModelTest(BaseTestCase):
         self.assertIsNone(self.product.score)
         self.comment.status = Comment.CommentStatus.PUBLISHED
         self.comment.save()
-        self.product.refresh_from_db()
         # 4.0, 4.0
         self.assertEqual(self.product.score, self.comment.score)
 
@@ -31,12 +30,11 @@ class CommentModelTest(BaseTestCase):
     def test_changed_status_to_rejected_comment(self):
         self.comment.status = Comment.CommentStatus.REJECTED
         self.comment.save()
-        self.product.refresh_from_db()
         self.assertEqual(self.product.score,1)
 
     def test_deleted_comment(self):
+        self.assertEqual(self.product.score,2.5)
         self.new_comment.delete()
-        self.product.refresh_from_db()
         self.assertEqual(self.product.score,4)
 
 

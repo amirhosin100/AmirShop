@@ -1,4 +1,5 @@
 from django.db import models
+
 from base.base_models import BaseModel
 from django.utils.translation import gettext_lazy as _
 
@@ -55,24 +56,7 @@ class Comment(BaseModel):
     def __str__(self):
         return f'{self.user.get_full_name()} : {self.content[:20]}'
 
-    def change_product_score(self):
-        final_score = 0
-        query = Comment.published.filter(product=self.product)
-        number = query.count() if query.count() else 0
-        for comment in query:
-            final_score += comment.score
 
-        if number:
-            self.product.score = final_score / number
-            self.product.save()
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.change_product_score()
-
-    def delete(self, *args, **kwargs):
-        super().delete(*args, **kwargs)
-        self.change_product_score()
 
 
 class CommentImage(BaseModel):
