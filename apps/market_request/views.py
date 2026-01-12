@@ -15,18 +15,23 @@ class MarketRequestCreateView(APIView):
     def post(self, request):
         serializer = MarketRequestSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-
+        if not request.user.get_full_name():
             return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
+                data={
+                    "error" : "You must set your name. First"
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
 
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save(user=request.user)
+
         return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+            serializer.data,
+            status=status.HTTP_201_CREATED
         )
+
 
 class MarketRequestDetailView(APIView):
     serializer_class = MarketRequestSerializer

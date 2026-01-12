@@ -10,9 +10,14 @@ class BaseTest(test.APITestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_user(
             phone='09123456789',
+            first_name='amir',
         )
         cls.other_user = User.objects.create_user(
             phone='09123456788',
+            first_name='ali',
+        )
+        cls.user_without_name = User.objects.create_user(
+            phone='09123456999',
         )
         cls.factory = test.APIRequestFactory()
         cls.list_url = reverse('market_request:list')
@@ -107,6 +112,7 @@ class MarketRequestCreateViewTest(BaseTest):
             data=self.data,
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(MarketRequest.objects.count(), 1)
 
     def test_by_authenticated_user(self):
         self.client.force_authenticate(user=self.user)
@@ -123,3 +129,13 @@ class MarketRequestCreateViewTest(BaseTest):
         response = self.client.post(self.create_url, self.data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(MarketRequest.objects.count(), 1)
+
+    def test_by_user_without_name(self):
+        self.client.force_authenticate(user=self.user_without_name)
+        response = self.client.post(self.create_url, self.data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(MarketRequest.objects.count(), 1)
+
+        self.assertIn('You must set your name',response.data.get('error'))
