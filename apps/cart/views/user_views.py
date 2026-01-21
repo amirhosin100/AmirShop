@@ -1,3 +1,4 @@
+import logging
 from rest_framework import views, status, generics
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +13,8 @@ from apps.cart.models import (
     CartInfo
 )
 from apps.product.models import Product
+
+logger = logging.getLogger(__name__)
 
 
 class CartDetailView(views.APIView):
@@ -37,6 +40,7 @@ class AddToCartView(views.APIView):
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
+            logger.info('Product does not exist')
             return Response(
                 data={
                     "message": "Product does not exist",
@@ -61,6 +65,7 @@ class DecreaseCartItemView(views.APIView):
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
+            logger.info('Product does not exist')
             return Response(
                 data={
                     "message": "Product does not exist",
@@ -70,6 +75,7 @@ class DecreaseCartItemView(views.APIView):
         try:
             item = Cart.manage_items.decrease(request.user, product)
         except ValueError:
+            logger.info(f"This product don't exist in your cart. Cart id is {request.user.cart.id}")
             return Response(
                 data={
                     "message": "This product don't exist in your cart",
@@ -104,6 +110,7 @@ class SetItemQuantityView(views.APIView):
 
         serializer.is_valid(raise_exception=True)
         if not serializer.validated_data.get('quantity'):
+            logger.warning('quantity is empty')
             return Response(
                 data={
                     "error": "quantity is required",
@@ -143,10 +150,11 @@ class RemoveCartItemView(views.APIView):
         except ValueError as e:
             return Response(
                 data={
-                    "message": "product doesn't exist to cart",
+                    "message": "product doesn't exist in your cart",
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        logger.info(f'Product deleted from cart. Product id is {product.id}')
 
         return Response(
             data={

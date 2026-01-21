@@ -12,5 +12,5 @@ urlpatterns = [
 
     path('list/',MarketRequestListView.as_view(),name='list'),
 
-    path('detail/<str:market_request_id>',MarketRequestDetailView.as_view(),name='detail'),
+    path('detail/<str:market_request_id>/',MarketRequestDetailView.as_view(),name='detail'),
 ]

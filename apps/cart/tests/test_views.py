@@ -237,7 +237,7 @@ class CartViewsTestCase(APITestCase):
         """DELETE on missing item fails."""
         response = self.client.delete(self.remove_item_url(self.product1.id))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("product doesn't exist to cart", response.data['message'])
+        self.assertIn("product doesn't exist in your cart", response.data['message'])
 
     def test_remove_nonexistent_product_fails(self):
         """DELETE with invalid product 404."""

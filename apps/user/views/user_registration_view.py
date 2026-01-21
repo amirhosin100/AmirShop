@@ -1,3 +1,4 @@
+import logging
 from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -8,6 +9,8 @@ from apps.user.serializer.user_registration import (
     UserSetPasswordSerializer,
     UserInformationSerializer
 )
+
+logger = logging.getLogger(__name__)
 
 
 class UserRegistrationCreateCodeView(views.APIView):
@@ -37,6 +40,8 @@ class UserRegistrationCreateCodeView(views.APIView):
                 "mobile_number": phone,
             }
 
+            logger.info(f'created code for {phone}')
+
             return Response(
                 data,
                 status=status.HTTP_201_CREATED
@@ -62,6 +67,7 @@ class UserVerifyCodeView(views.APIView):
                 try:
                     check = OTP.codes.check_code(phone, code)
                 except ValueError as e:
+                    logger.warning(f'code is incorrect. phone number is {phone}')
                     return Response(
                         data={
                             "error": str(e)
@@ -82,6 +88,8 @@ class UserVerifyCodeView(views.APIView):
                         "mobile_number": phone,
                         "token": token.key
                     }
+
+                    logger.info(f'created token for {phone}')
 
                     return Response(
                         response_data,
@@ -135,12 +143,14 @@ class UserSetPasswordView(views.APIView):
             success_data = {
                 'message': 'password have been updated!'
             }
+            logger.info(f'password have been updated . Phone number is {request.user.phone}.')
 
             return Response(
                 success_data,
                 status=status.HTTP_200_OK
             )
         else:
+            logger.info(f"password didn't change. User id is {request.user.id}.")
             return Response(
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
@@ -175,6 +185,7 @@ class UserPasswordResetView(views.APIView):
             try:
                 check = OTP.codes.check_code(phone, code)
             except ValueError as e:
+                logger.warning(f"password didn't reset. User id is {request.user.id}.")
                 return Response(
                     data={
                         "error": str(e)
@@ -190,6 +201,7 @@ class UserPasswordResetView(views.APIView):
                     'success': True,
                     'message': "password has been reset!",
                 }
+                logger.info(f'password has been reset . Phone number is {request.user.phone}.')
                 return Response(
                     data,
                     status=status.HTTP_200_OK

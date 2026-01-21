@@ -1,4 +1,5 @@
 from datetime import timedelta
+import logging
 from utils.code import create_code
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -6,6 +7,8 @@ from django.db import models
 from django_resized import ResizedImageField
 from utils.validate import check_phone
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 
 class UserManager(BaseUserManager):
@@ -38,6 +41,7 @@ class UserManager(BaseUserManager):
         )
         user.set_password(password)
         user.save(using=self._db)
+        logging.info(f'created a user with id : {user.id}')
 
         return user
 

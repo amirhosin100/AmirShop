@@ -1,5 +1,6 @@
 from rest_framework import views, status, permissions
 from rest_framework.response import Response
+import logging
 from apps.market.models import Market
 from apps.market.serializer.market_serializer import (
     MarketOwnerSerializer,
@@ -8,6 +9,8 @@ from permissions.market import (
     IsMarketOwner,
     IsMarketer
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MarketOwnerCreateView(views.APIView):
@@ -32,7 +35,7 @@ class MarketOwnerCreateView(views.APIView):
             )
 
         serializer.save(marketer=request.user.marketer)
-
+        logger.info(f'created market with {market_name}. Market Owner is {request.user.marketer.user}')
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED
