@@ -1,7 +1,9 @@
+import logging
 from celery import shared_task
 from django.db.models import Avg
-
 from apps.user.models import Marketer
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -13,3 +15,4 @@ def calculate_score():
         marketer.score = marketer.markets.aggregate(Avg('score'))['score__avg']
         marketer.save()
 
+    logger.info('Scores went updated')
