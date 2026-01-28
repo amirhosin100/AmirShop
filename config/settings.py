@@ -17,7 +17,6 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -25,7 +24,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = 'django-insecure-9#ae0+06uv#owl%n81ctc085&gizm&%(q=_yc!phfarl=_8(v)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG','').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', '').lower() == 'true'
 
 allowed_hosts = os.environ.get('ALLOWED_HOSTS')
 if allowed_hosts:
@@ -33,12 +32,10 @@ if allowed_hosts:
 else:
     ALLOWED_HOSTS = []
 
-
-#csrf configurations
+# csrf configurations
 csrf = os.environ.get('CSRF_TRUSTED_ORIGINS')
 if csrf:
     CSRF_TRUSTED_ORIGINS = csrf.split(',')
-
 
 # Application definition
 
@@ -49,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #project apps
+    # project apps
     'apps.user.apps.UserConfig',
     'apps.market.apps.MarketConfig',
     'apps.product.apps.ProductConfig',
@@ -58,12 +55,12 @@ INSTALLED_APPS = [
     'apps.market_request.apps.MarketRequestConfig',
     'apps.payment.apps.PaymentConfig',
     'apps.comment.apps.CommentConfig',
-    #api
+    # api
     'rest_framework.authtoken',
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'rest_framework_simplejwt',
-    #celery
+    # celery
     'django_celery_beat'
 ]
 
@@ -96,30 +93,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-if os.environ.get('DATABASE','postgres') == 'postgres':
+if os.environ.get('DATABASE', 'postgres') == 'postgres':
     DATABASES = {
         'default': {
-            'ENGINE' : 'django.db.backends.postgresql',
-            'NAME' : os.environ.get('POSTGRES_DB'),
-            'USER' : os.environ.get('POSTGRES_USER'),
-            'PASSWORD' : os.environ.get('POSTGRES_PASSWORD'),
-            'HOST' : 'postgres',
-            'PORT' : "5432",
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': 'postgres',
+            'PORT': "5432",
         }
     }
 else:
     DATABASES = {
         'default': {
-            'ENGINE' : 'django.db.backends.sqlite3',
-            'NAME' : BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -139,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -151,7 +145,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
@@ -161,12 +154,12 @@ STATIC_ROOT = BASE_DIR / 'static'
 
 AUTH_USER_MODEL = 'user.User'
 
-#media
+# media
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
-#REST FRAMEWORK
+# REST FRAMEWORK
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -191,10 +184,54 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
 }
 
-#CELERY CONFIGURATIONS
+# CELERY CONFIGURATIONS
 rabbitmq_user = os.environ.get('RABBITMQ_USER')
 rabbitmq_password = os.environ.get('RABBITMQ_PASSWORD')
 CELERY_BROKER_URL = f'amqp://{rabbitmq_user}:{rabbitmq_password}@localhost:5672'
 CELERY_RESULT_BACKEND = 'rpc://'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_ACKS_LATE = True
+
+# logging
+
+#check existent log directory
+
+if not os.path.exists(BASE_DIR / 'logs'):
+    os.mkdir(BASE_DIR / 'logs')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] [{levelname}] : {message}',
+            'style' : '{'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file' : {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': BASE_DIR / 'logs' / 'error.log',
+            'maxBytes': 100,
+            'backupCount': 5,
+            'level': 'ERROR',
+        }
+    },
+    'root': {
+        'handlers': ['console','file'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console','file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        },
+
+    }
+}
