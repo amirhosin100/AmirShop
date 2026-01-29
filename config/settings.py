@@ -218,7 +218,7 @@ LOGGING = {
             'formatter': 'verbose',
             'filename': BASE_DIR / 'logs' / 'error.log',
             'maxBytes': 100,
-            'backupCount': 5,
+            'backupCount': 10 * 1024 * 1024, #10M
             'level': 'ERROR',
         }
     },
