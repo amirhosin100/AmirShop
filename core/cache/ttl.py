@@ -1,0 +1,6 @@
+
+class CacheTTL:
+    MARKET_LIST = 60 * 5
+    MARKET_DETAIL = 60 * 30
+    PRODUCT_DETAIL = 60 * 10
+    PRODUCT_LIST = 60 * 5

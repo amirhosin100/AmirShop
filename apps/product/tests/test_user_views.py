@@ -81,19 +81,19 @@ class ProductViewPermissionTests(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.product.name)
-        self.assertIn('image', response.data[0])
+        self.assertEqual(len(response.data['data']), 1)
+        self.assertEqual(response.data['data'][0]['name'], self.product.name)
+        self.assertIn('images', response.data['data'][0])
 
     def test_product_list_filter(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url, {'q': 'Test'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['data']), 1)
 
         response = self.client.get(self.list_url, {'q': 'NonExisting'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['data']), 0)
 
     # ---------------- Detail View ----------------
     def test_product_detail_anonymous_denied(self):
