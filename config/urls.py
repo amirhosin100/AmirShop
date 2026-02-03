@@ -35,6 +35,8 @@ api_urlpatterns = [
 
     path('user/comment/', include('apps.comment.urls.user_urls',namespace='comment_user')),
 
+    path('user/category/',include('apps.category.urls.user_urls',namespace='category_user')),
+
     path('owner/market/', include('apps.market.urls.owner_urls',namespace='market_owner')),
 
     path('owner/product/', include('apps.product.urls.owner_urls',namespace='product_owner')),
