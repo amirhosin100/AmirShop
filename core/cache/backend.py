@@ -24,7 +24,3 @@ class CacheBackend:
         logger.debug("CACHE DELETE %s ", key)
         return True
 
-    @staticmethod
-    def delete_prefix(prefix: str):
-        cache.delete_pattern(f"{prefix}*")
-        logger.debug("CACHE DELETE PREFIX %s", prefix)

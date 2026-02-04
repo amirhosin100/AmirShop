@@ -4,3 +4,5 @@ class CacheTTL:
     MARKET_DETAIL = 60 * 30
     PRODUCT_DETAIL = 60 * 10
     PRODUCT_LIST = 60 * 5
+    CATEGORY_DETAIL = 60 * 60 * 24
+    CATEGORY_LIST = 60 * 60 * 24

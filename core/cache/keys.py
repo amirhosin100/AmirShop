@@ -12,3 +12,10 @@ def market_list_key(page: int):
 
 def market_detail_key(market_id: str):
     return f"market:detail:{market_id}"
+
+
+def category_detail_key(category_id: str):
+    return f"category:detail:{category_id}"
+
+def category_list_key():
+    return "category:list"
