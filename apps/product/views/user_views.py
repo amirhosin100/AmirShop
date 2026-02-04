@@ -54,7 +54,6 @@ class ProductListView(views.APIView):
                 "count": paginator.num_pages,
                 "data": serializer.data,
             }
-            print(data)
             ProductService.save_product_list(data, page, q)
 
         return Response(

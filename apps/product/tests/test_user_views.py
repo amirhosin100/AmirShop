@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.test import override_settings
 from rest_framework.test import APITestCase
 from rest_framework import status
+from apps.category.models import SubCategory
 from apps.user.models import User, Marketer
 from apps.market.models import Market
 from apps.product.models import Product, ProductImage, ProductFeature
@@ -20,6 +21,7 @@ class ProductViewPermissionTests(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.category = SubCategory.objects.first()
         # ایجاد کاربر
         cls.user = User.objects.create_user(phone="09909998877", password="password123")
         Marketer.objects.create(
@@ -38,6 +40,7 @@ class ProductViewPermissionTests(APITestCase):
 
         # ایجاد محصول
         self.product = Product.objects.create(
+            category=self.category,
             market=self.market,
             name="Test Product",
             price=1000,
@@ -146,10 +149,12 @@ class ProductViewPermissionTests(APITestCase):
         self.assertEqual(len(response.data['images']), 2)
 
     def test_product_without_image_or_feature(self):
+
         product = Product.objects.create(
             market=self.market,
             name="Empty Product",
-            price=100
+            price=100,
+            category=self.category
         )
         self.client.force_authenticate(user=self.user)
         detail_url = reverse('product_user:product_detail', args=[product.id])

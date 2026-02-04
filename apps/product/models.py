@@ -19,6 +19,13 @@ class Product(BaseModel):
         max_length=255,
         verbose_name=pgettext_lazy("Product name", "name"),
     )
+    category =  models.ForeignKey(
+        "category.SubCategory",
+        on_delete=models.PROTECT,
+        related_name='products',
+        verbose_name=_('Category'),
+        null=True,
+    )
 
     description = models.TextField(
         max_length=2000,

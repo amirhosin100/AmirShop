@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.category.models import Category
+from apps.category.services import CategoryService
 from apps.category.serializer.user_serializer import (
     CategoryDetailSerializer,
     CategoryListSerializer
@@ -14,12 +15,18 @@ class CategoryListView(APIView):
     serializer_class = CategoryListSerializer
 
     def get(self, request):
-        categories = Category.objects.all()
+        data = CategoryService.load_list_category()
 
-        serializer = CategoryListSerializer(categories, many=True)
+        if not data:
+            categories = Category.objects.all()
+
+            serializer = CategoryListSerializer(categories, many=True)
+            data = serializer.data
+
+            CategoryService.save_list_category(data)
 
         return Response(
-            serializer.data,
+            data,
             status=status.HTTP_200_OK
         )
 
@@ -28,23 +35,25 @@ class CategoryDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CategoryDetailSerializer
 
-    def get(self,request,category_id):
-        try:
-            category = Category.objects.get(id=category_id)
-        except Category.DoesNotExist:
-            return Response(
-                data={
-                    "error" : f"category with {category_id} does not exist"
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
+    def get(self, request, category_id):
+        data = CategoryService.load_detail_category(category_id)
+        if not data:
+            try:
+                category = Category.objects.get(id=category_id)
+            except Category.DoesNotExist:
+                return Response(
+                    data={
+                        "error": f"category with {category_id} does not exist"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
-        serializer = CategoryDetailSerializer(category)
+            serializer = CategoryDetailSerializer(category)
+            data = serializer.data
+
+            CategoryService.save_detail_category(data, category_id)
 
         return Response(
-            serializer.data,
+            data,
             status=status.HTTP_200_OK
         )
-
-
-

@@ -5,6 +5,7 @@ from django.urls import reverse
 from apps.user.models import User, Marketer
 from apps.market.models import Market
 from apps.product.models import Product, ProductImage, ProductFeature
+from apps.category.models import SubCategory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
 from io import BytesIO
@@ -34,7 +35,7 @@ class BaseTestSetup(APITestCase):
         # Users
         cls.user = User.objects.create_user(phone="09901234567", password="pass")
         cls.other_user = User.objects.create_user(phone="09907654321", password="pass")
-
+        cls.category = SubCategory.objects.first()
         # Marketer and Market
         cls.marketer = Marketer.objects.create(
             user=cls.user,
@@ -49,6 +50,7 @@ class BaseTestSetup(APITestCase):
     def setUp(self):
         # Product
         self.product = Product.objects.create(
+            category=self.category,
             market=self.market,
             name="Test Product",
             description="desc",

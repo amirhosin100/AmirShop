@@ -5,12 +5,12 @@ from io import BytesIO
 
 from django.test import TestCase, override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework.exceptions import ValidationError
 from PIL import Image
 
 from apps.user.models import User, Marketer
 from apps.market.models import Market
 from apps.product.models import Product, ProductImage, ProductFeature
+from apps.category.models import SubCategory
 from apps.product.serializer.common_seializer import (
     ProductImageSerializer,
     ProductFeatureSerializer,
@@ -43,8 +43,10 @@ class ProductSerializerTests(TestCase):
             marketer=self.marketer,
             name="Test Market"
         )
+        self.category = SubCategory.objects.first()
 
         self.product = Product.objects.create(
+            category=self.category,
             market=self.market,
             name="Test Product",
             price=1000,

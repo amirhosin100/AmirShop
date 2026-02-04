@@ -26,6 +26,8 @@ class Category(models.Model):
         indexes = [
             models.Index(fields=["title"]),
         ]
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.title
@@ -52,6 +54,8 @@ class SubCategory(models.Model):
             models.Index(fields=["title","category"]),
         ]
         unique_together = ("title","category")
+        verbose_name = "Sub Category"
+        verbose_name_plural = "Sub Categories"
 
     def __str__(self):
         return f"{self.title} : {self.category.title}"
