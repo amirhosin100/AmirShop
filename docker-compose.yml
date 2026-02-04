@@ -2,7 +2,7 @@ services:
   web:
     container_name: web
     build: .
-    command: "gunicorn config.wsgi:application -c ./config/gunicorn_conf.py"
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi:application -c ./config/gunicorn_conf.py"
     env_file:
       - .env
     expose:
@@ -11,6 +11,7 @@ services:
       - main
     depends_on:
       - postgres
+      - redis
     volumes:
       - ".:/src"
     restart: "always"
@@ -30,6 +31,17 @@ services:
     networks:
       - main
     restart: "always"
+
+  redis :
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - main
+    volumes:
+      - "redis_data:/data"
+    command: redis-server --appendonly yes
 
   nginx :
     container_name : nginx
@@ -55,3 +67,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
