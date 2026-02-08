@@ -13,11 +13,6 @@ def change_product_score(instance):
     instance.product.save()
 
 
-@receiver(post_save, sender=Comment)
-def update_score_to_product(sender, instance, **kwargs):
-    change_product_score(instance)
-
-
-@receiver(post_delete, sender=Comment)
+@receiver([post_save, post_delete], sender=Comment)
 def update_score_to_product(sender, instance, **kwargs):
     change_product_score(instance)

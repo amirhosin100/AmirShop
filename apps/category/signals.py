@@ -7,21 +7,13 @@ def invalid(category_id):
     invalidate_category_list()
     invalidate_category_detail(category_id)
 
-@receiver(post_save, sender=Category)
+@receiver([post_save,pre_delete], sender=Category)
 def invalidate_cache(sender, instance, **kwargs):
     invalid(instance.pk)
 
 
-@receiver(pre_delete, sender=Category)
-def invalidate_cache(sender, instance, **kwargs):
-    invalid(instance.pk)
-
-
-@receiver(post_save, sender=SubCategory)
+@receiver([post_save,pre_delete], sender=SubCategory)
 def invalidate_cache(sender, instance, **kwargs):
     invalidate_category_detail(instance.category.id)
 
 
-@receiver(pre_delete, sender=SubCategory)
-def invalidate_cache(sender, instance, **kwargs):
-    invalidate_category_detail(instance.category.id)

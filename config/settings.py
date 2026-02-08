@@ -123,7 +123,7 @@ else:
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379',
+        'LOCATION': 'redis://127.0.0.1:6379',
     }
 }
 
@@ -228,8 +228,8 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': BASE_DIR / 'logs' / 'error.log',
-            'maxBytes': 100,
-            'backupCount': 10 * 1024 * 1024, #10M
+            'maxBytes': 10 * 1024 * 1024, #10M
+            'backupCount': 5,
             'level': 'ERROR',
         }
     },
