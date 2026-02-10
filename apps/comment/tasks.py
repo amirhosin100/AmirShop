@@ -23,10 +23,10 @@ def calculate_score():
 
 
 @shared_task
-def make_summary():
+def summarizing_comments():
     summarizer = CommentSummarizing()
 
     products = Product.objects.annotate(Count('comments'))
-    products = products.filter(comments__count__gte=2)
+    products = list(products.filter(comments__count__gte=0))
 
     asyncio.run(summarizer.summarize_from_query_set(products))

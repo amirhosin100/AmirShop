@@ -1,8 +1,8 @@
-from django.contrib.admin.templatetags.admin_list import pagination
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from rest_framework import views, status
+from rest_framework import views, status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from django_filters import rest_framework as filters
 from apps.product.services import ProductService
 from apps.product.models import Product
 from apps.product.serializer.user_serializer import (
@@ -11,55 +11,20 @@ from apps.product.serializer.user_serializer import (
 from apps.product.serializer.common_seializer import (
     ProductDetailSerializer,
 )
+from apps.product.filters import ProductFilter
 
 
-class ProductListView(views.APIView):
-    serializer_class = ProductSimpleSerializer
+class ProductListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = ProductSimpleSerializer
+    queryset = Product.objects.all()
+    pagination_class = PageNumberPagination
+    page_size = 10
 
-    def get(self, request):
-        page = request.GET.get("page", 1)
-        q = request.GET.get("q", "")
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
-        data = ProductService.load_product_list(page, q)
 
-        # if data didn't exist in cache
-        if not data:
-            query = Product.objects.all()
-            if q:
-                query = query.filter(name__icontains=q)
-
-            paginator = Paginator(query, 10)
-
-            try:
-                products = paginator.page(page)
-            except PageNotAnInteger:
-                return Response(
-                    data={
-                        "error": "page is not an integer",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            except EmptyPage:
-                return Response(
-                    data={
-                        "error": "page is empty",
-                    },
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-            serializer = ProductDetailSerializer(products, many=True)
-            data = {
-                "page": page,
-                "count": paginator.num_pages,
-                "data": serializer.data,
-            }
-            ProductService.save_product_list(data, page, q)
-
-        return Response(
-            data,
-            status=status.HTTP_200_OK,
-        )
 
 
 class ProductDetailView(views.APIView):

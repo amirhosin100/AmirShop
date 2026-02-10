@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import AsyncOpenAI,OpenAI
 import os
 
 
@@ -9,13 +9,13 @@ class AIBackend:
         if self.key is None:
             raise EnvironmentError("OpenAI API key not set")
 
-        self.client = OpenAI(
+        self.client = AsyncOpenAI(
             api_key=self.key,
             base_url="https://api.gapgpt.app/v1",
         )
 
-    def send_message(self, message: str, model='gpt-4o'):
-        response = self.client.chat.completions.create(
+    async def send_message(self, message: str, model='gpt-4o'):
+        response = await self.client.chat.completions.create(
             model=model,
             messages=[
                 {
