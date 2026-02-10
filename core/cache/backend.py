@@ -15,12 +15,16 @@ class CacheBackend:
     @staticmethod
     def set(key, value, ttl):
         cache.set(key, value, ttl)
-        logger.debug("CACHE SET %s (ttl=%s)", key, ttl)
+        logger.info("CACHE SET %s (ttl=%s)", key, ttl)
         return True
 
     @staticmethod
     def delete(key):
         cache.delete(key)
-        logger.debug("CACHE DELETE %s ", key)
+        logger.info("CACHE DELETE %s ", key)
         return True
 
+    @staticmethod
+    def delete_prefix(key):
+        logger.info("CACHE DELETE_PREFIX %s", key)
+        cache.delete_pattern(f"*{key}*")

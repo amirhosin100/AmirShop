@@ -3,7 +3,7 @@ from core.cache.keys import product_detail_key, market_detail_key, category_deta
 
 
 def invalidate_product_list():
-    CacheBackend.delete("product:list")
+    CacheBackend.delete_prefix("product:list")
 
 
 def invalidate_market_list():

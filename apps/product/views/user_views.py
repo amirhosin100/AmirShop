@@ -1,8 +1,13 @@
+import time
+
 from rest_framework import views, status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters import rest_framework as filters
+from core.cache.ttl import CacheTTL
 from apps.product.services import ProductService
 from apps.product.models import Product
 from apps.product.serializer.user_serializer import (
@@ -24,7 +29,13 @@ class ProductListView(generics.ListAPIView):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter
 
+    @method_decorator(cache_page(CacheTTL.PRODUCT_LIST, key_prefix='product:list'))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
+    def get_queryset(self):
+        time.sleep(2)
+        return super().get_queryset()
 
 
 class ProductDetailView(views.APIView):
