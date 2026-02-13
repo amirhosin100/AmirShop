@@ -2,6 +2,8 @@ import logging
 from rest_framework import views, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from apps.user.models import User, OTP
 from rest_framework.response import Response
 from apps.user.serializer.user_registration import (
@@ -79,6 +81,8 @@ class UserVerifyCodeView(views.APIView):
                     user, is_user_create = User.objects.get_or_create(phone=phone)
                     token, _ = Token.objects.get_or_create(user=user)
 
+                    refresh = RefreshToken.for_user(user)
+
                     # set_unusable_pass
                     if is_user_create:
                         user.set_unusable_password()
@@ -86,7 +90,11 @@ class UserVerifyCodeView(views.APIView):
 
                     response_data = {
                         "mobile_number": phone,
-                        "token": token.key
+                        "token": token.key,
+                        "jwt" : {
+                            "refresh": str(refresh),
+                            "access" : str(refresh.access_token)
+                        }
                     }
 
                     logger.info(f'created token for {phone}')
