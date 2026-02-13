@@ -27,6 +27,6 @@ def summarizing_comments():
     summarizer = CommentSummarizing()
 
     products = Product.objects.annotate(Count('comments'))
-    products = list(products.filter(comments__count__gte=0))
+    products = list(products.filter(comments__count__gte=5))
 
     asyncio.run(summarizer.summarize_from_query_set(products))

@@ -12,19 +12,20 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     volumes:
       - ".:/src"
     restart: "always"
 
   postgres:
-    image : "postgres:18"
+    image: "postgres:18"
     container_name: postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD : ${POSTGRES_PASSWORD}
-      POSTGRES_USER : ${POSTGRES_USER}
-      POSTGRES_DB : ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
 
     volumes:
       - postgres_data:/var/lib/postgresql
@@ -32,7 +33,33 @@ services:
       - main
     restart: "always"
 
-  redis :
+  celery_worker:
+    build: .
+    container_name: "celery_worker"
+    command: celery -A config worker -l INFO
+
+    networks:
+      - main
+    depends_on:
+      - web
+    volumes:
+      - ".:/src"
+    restart: "always"
+
+  celery_beat:
+    build: .
+    container_name: "celery_beat"
+    command: celery -A config beat -l info -S django
+    networks:
+      - main
+    depends_on:
+      - web
+    volumes:
+      - ".:/src"
+    restart: "always"
+
+
+  redis:
     image: redis:latest
     container_name: redis
     ports:
@@ -43,23 +70,34 @@ services:
       - "redis_data:/data"
     command: redis-server --appendonly yes
 
-  nginx :
-    container_name : nginx
+  nginx:
+    container_name: nginx
     command: nginx -g 'daemon off;'
-    image : "nginx:1.29.4"
-    ports :
+    image: "nginx:1.29.4"
+    ports:
       - "80:80"
       - "443:443"
     volumes:
       - "./static/:/src/static"
       - "./media/:/src/media"
       - "./nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
-
     networks:
       - main
     depends_on:
       - web
     restart: always
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: "rabbitmq:4.2.2"
+    networks:
+      - main
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
 
 
 networks:

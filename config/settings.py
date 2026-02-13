@@ -125,7 +125,7 @@ else:
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379',
+        'LOCATION': 'redis://redis:6379',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             "SOCKET_CONNECT_TIMEOUT": 5,  # seconds
@@ -209,7 +209,7 @@ SPECTACULAR_SETTINGS = {
 # CELERY CONFIGURATIONS
 rabbitmq_user = os.environ.get('RABBITMQ_USER')
 rabbitmq_password = os.environ.get('RABBITMQ_PASSWORD')
-CELERY_BROKER_URL = f'amqp://{rabbitmq_user}:{rabbitmq_password}@localhost:5672'
+CELERY_BROKER_URL = f'amqp://{rabbitmq_user}:{rabbitmq_password}@rabbitmq:5672'
 CELERY_RESULT_BACKEND = 'rpc://'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_ACKS_LATE = True
